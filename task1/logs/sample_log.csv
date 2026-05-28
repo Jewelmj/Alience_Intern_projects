@@ -1,3 +1,0 @@
-2026-03-18 10:15:23, INFO, service_a, Request completed in 120ms
-2026-03-18 10:15:24, ERROR, service_b, Timeout occurred
-2026-03-18 10:15:25, WARN, service_a, Retry attempt 1
