@@ -54,3 +54,8 @@ class AnomalyDetector:
                 )
 
         return anomalies
+    
+    def merge(self, other):
+        self.error_windows.update(
+            other.error_windows
+        )

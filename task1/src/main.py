@@ -9,9 +9,7 @@ from config.settings import (
     ANOMALY_THRESHOLD,
 )
 
-from src.parser import parse_log_directory
-from src.metrics import MetricsAnalyzer
-from src.anomaly import AnomalyDetector
+from src.concurrent_processor import (process_logs_concurrently)
 
 def parse_arguments():
 
@@ -37,17 +35,12 @@ def parse_arguments():
 def main():
     args = parse_arguments()
 
-    metrics = MetricsAnalyzer()
-
-    anomaly_detector = AnomalyDetector(
-        threshold=args.threshold
+    metrics, anomaly_detector = (
+        process_logs_concurrently(
+            args.log_dir,
+            args.threshold
+        )
     )
-
-    for log in parse_log_directory(args.log_dir):
-
-        metrics.process_log(log)
-
-        anomaly_detector.process_log(log)
 
     result = {
         "summary": metrics.get_summary(),
