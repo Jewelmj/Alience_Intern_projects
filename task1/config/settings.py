@@ -26,3 +26,13 @@ END_DATE = os.getenv(
 ANOMALY_THRESHOLD = int(
     os.getenv("ANOMALY_THRESHOLD", 50)
 )
+
+OUTPUT_DIR = os.getenv(
+    "OUTPUT_DIR",
+    "output"
+)
+
+OUTPUT_FILE = os.getenv(
+    "OUTPUT_FILE",
+    "result.json"
+)
