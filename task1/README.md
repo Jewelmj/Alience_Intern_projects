@@ -83,6 +83,16 @@ python -m src.main
 
 ---
 
+# CLI Usage
+
+python -m src.main --threshold 200
+
+python -m src.main --log-dir logs
+
+python -m src.main --log-dir logs --threshold 200
+
+---
+
 # Testing
 
 python -m unittest discover tests
@@ -104,6 +114,7 @@ Log Files
 - Generators for memory-efficient processing
 - Unit tests
 - Malformed log handling
+- Command Line Interface (CLI)
 
 # Planned Enhancements
 

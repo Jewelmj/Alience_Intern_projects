@@ -1,5 +1,6 @@
 import json
 import os
+import argparse
 
 from config.settings import (
     LOG_DIR,
@@ -12,14 +13,37 @@ from src.parser import parse_log_directory
 from src.metrics import MetricsAnalyzer
 from src.anomaly import AnomalyDetector
 
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(
+        description="Log Processing and Anomaly Detection"
+    )
+
+    parser.add_argument(
+        "--log-dir",
+        default=LOG_DIR,
+        help="Directory containing log files"
+    )
+
+    parser.add_argument(
+        "--threshold",
+        type=int,
+        default=ANOMALY_THRESHOLD,
+        help="Error threshold for anomaly detection"
+    )
+
+    return parser.parse_args()
+
 def main():
+    args = parse_arguments()
+
     metrics = MetricsAnalyzer()
 
     anomaly_detector = AnomalyDetector(
-        threshold=ANOMALY_THRESHOLD
+        threshold=args.threshold
     )
 
-    for log in parse_log_directory(LOG_DIR):
+    for log in parse_log_directory(args.log_dir):
 
         metrics.process_log(log)
 
