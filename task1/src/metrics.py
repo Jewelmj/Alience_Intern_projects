@@ -73,3 +73,22 @@ class MetricsAnalyzer:
 
             "error_rates": self.get_error_rates()
         }
+    
+    def merge(self, other):
+        self.total_logs += other.total_logs
+
+        self.level_counts.update(
+            other.level_counts
+        )
+
+        self.service_counts.update(
+            other.service_counts
+        )
+
+        self.error_counts.update(
+            other.error_counts
+        )
+
+        self.service_errors.update(
+            other.service_errors
+        )
