@@ -25,12 +25,8 @@ def process_single_file(file_path,threshold):
 def get_log_files(log_dir):
 
     return [
-        os.path.join(
-            log_dir,
-            file_name
-        )
-        for file_name
-        in os.listdir(log_dir)
+        os.path.join(log_dir,file_name)
+        for file_name in os.listdir(log_dir)
         if file_name.endswith(".log")
     ]
 
