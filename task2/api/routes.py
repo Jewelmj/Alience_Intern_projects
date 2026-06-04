@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import APIRouter, UploadFile, File
 
 router = APIRouter()
