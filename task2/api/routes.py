@@ -1,10 +1,10 @@
-from typing import List
 from fastapi import APIRouter, UploadFile, File
+from config.settings import (
+    ALLOWED_EXTENSIONS,
+    MAX_UPLOAD_FILES
+)
 
 router = APIRouter()
-
-ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg"}
-
 
 @router.get("/")
 def home():
@@ -12,12 +12,12 @@ def home():
 
 
 @router.post("/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(files: list[UploadFile] = File(...)):
 
-    if len(files) > 3:
+    if len(files) > MAX_UPLOAD_FILES:
         return {
             "status": "error",
-            "message": "Maximum 3 files allowed"
+            "message": f"Maximum {MAX_UPLOAD_FILES} files allowed"
         }
 
     for file in files:
