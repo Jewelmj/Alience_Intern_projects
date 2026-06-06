@@ -4,3 +4,7 @@ we use/tech stack:
 python 3.12
 conda for venv
 fastapi for api
+
+how to use:
+conda create final_project_alience_intern
+conda activate final_project_alience_intern
