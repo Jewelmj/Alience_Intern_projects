@@ -1,9 +1,12 @@
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
+from io import BytesIO
+from pypdf import PdfReader
 from config.settings import (
     ALLOWED_EXTENSIONS,
     MAX_UPLOAD_FILES,
-    UPLOAD_FOLDER
+    UPLOAD_FOLDER,
+    MAX_PDF_PAGES
 )
 
 router = APIRouter()
@@ -67,7 +70,27 @@ async def upload_files(files: list[UploadFile] = File(...)):
                 "status": "error",
                 "message": f"Unsupported file type: {file.filename}"
             }
+        
+        content = await file.read()
 
+        if filename.endswith(".pdf"):
+
+            try:
+                pdf_reader = PdfReader(BytesIO(content))
+                page_count = len(pdf_reader.pages)
+
+                if page_count > MAX_PDF_PAGES:
+                    return {
+                        "status": "error",
+                        "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
+                    }
+
+            except Exception:
+                return {
+                    "status": "error",
+                    "message": f"Unable to read PDF: {file.filename}"
+                }
+            
         file_path = Path(UPLOAD_FOLDER) / file.filename
 
         file_path = get_unique_filename(file_path)

@@ -18,6 +18,13 @@ MAX_UPLOAD_FILES = int(
     )
 )
 
+MAX_PDF_PAGES = int(
+    os.getenv(
+        "MAX_PDF_PAGES",
+        5
+    )
+)
+
 UPLOAD_FOLDER = os.getenv(
     "UPLOAD_FOLDER",
     "storage/uploads"
