@@ -1,19 +1,46 @@
-from typing import List
-from fastapi import APIRouter, UploadFile, File
 from pathlib import Path
-from pypdf import PdfReader
-from io import BytesIO
+from fastapi import APIRouter, UploadFile, File
 from config.settings import (
     ALLOWED_EXTENSIONS,
-    MAX_FILES,
-    MAX_PDF_PAGES
+    MAX_UPLOAD_FILES,
+    UPLOAD_FOLDER
 )
 
 router = APIRouter()
 
-UPLOAD_DIR = Path("storage/uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+Path(UPLOAD_FOLDER).mkdir(
+    parents=True,
+    exist_ok=True
+)
 
+def get_unique_filename(file_path: Path) -> Path:
+    """
+    Prevent overwriting existing files.
+    Example:
+        report.pdf
+        report_1.pdf
+        report_2.pdf
+    """
+
+    if not file_path.exists():
+        return file_path
+
+    stem = file_path.stem
+    suffix = file_path.suffix
+
+    counter = 1
+
+    while True:
+
+        new_path = (
+            file_path.parent
+            / f"{stem}_{counter}{suffix}"
+        )
+
+        if not new_path.exists():
+            return new_path
+
+        counter += 1
 
 @router.get("/")
 def home():
@@ -21,48 +48,40 @@ def home():
 
 
 @router.post("/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(files: list[UploadFile] = File(...)):
 
-    if len(files) > MAX_FILES:
+    if len(files) > MAX_UPLOAD_FILES:
         return {
             "status": "error",
-            "message": "Maximum 3 files allowed"
+            "message": f"Maximum {MAX_UPLOAD_FILES} files allowed"
         }
+
+    saved_files = []
 
     for file in files:
 
         filename = file.filename.lower()
 
-        # Check file extension
         if not filename.endswith(tuple(ALLOWED_EXTENSIONS)):
             return {
                 "status": "error",
                 "message": f"Unsupported file type: {file.filename}"
             }
 
-        # Read file contents
-        content = await file.read()
+        file_path = Path(UPLOAD_FOLDER) / file.filename
 
-        # PDF page validation
-        if filename.endswith(".pdf"):
-
-            pdf_reader = PdfReader(BytesIO(content))
-            page_count = len(pdf_reader.pages)
-
-            if page_count > MAX_PDF_PAGES:
-                return {
-                    "status": "error",
-                    "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
-                }
-
-        # Save file
-        file_path = UPLOAD_DIR / file.filename
+        file_path = get_unique_filename(file_path)
 
         with open(file_path, "wb") as buffer:
-            buffer.write(content)
+            buffer.write(
+                await file.read()
+            )
+
+        saved_files.append(
+            file_path.name
+        )
 
     return {
-    "status": "success",
-    "message": "Files uploaded successfully",
-    "files": [file.filename for file in files]
-}
+        "status": "success",
+        "files": saved_files
+    }
