@@ -1,10 +1,46 @@
+from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
 from config.settings import (
     ALLOWED_EXTENSIONS,
-    MAX_UPLOAD_FILES
+    MAX_UPLOAD_FILES,
+    UPLOAD_FOLDER
 )
 
 router = APIRouter()
+
+Path(UPLOAD_FOLDER).mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+def get_unique_filename(file_path: Path) -> Path:
+    """
+    Prevent overwriting existing files.
+    Example:
+        report.pdf
+        report_1.pdf
+        report_2.pdf
+    """
+
+    if not file_path.exists():
+        return file_path
+
+    stem = file_path.stem
+    suffix = file_path.suffix
+
+    counter = 1
+
+    while True:
+
+        new_path = (
+            file_path.parent
+            / f"{stem}_{counter}{suffix}"
+        )
+
+        if not new_path.exists():
+            return new_path
+
+        counter += 1
 
 @router.get("/")
 def home():
@@ -20,6 +56,8 @@ async def upload_files(files: list[UploadFile] = File(...)):
             "message": f"Maximum {MAX_UPLOAD_FILES} files allowed"
         }
 
+    saved_files = []
+
     for file in files:
 
         filename = file.filename.lower()
@@ -30,7 +68,20 @@ async def upload_files(files: list[UploadFile] = File(...)):
                 "message": f"Unsupported file type: {file.filename}"
             }
 
+        file_path = Path(UPLOAD_FOLDER) / file.filename
+
+        file_path = get_unique_filename(file_path)
+
+        with open(file_path, "wb") as buffer:
+            buffer.write(
+                await file.read()
+            )
+
+        saved_files.append(
+            file_path.name
+        )
+
     return {
         "status": "success",
-        "files": [file.filename for file in files]
+        "files": saved_files
     }

@@ -17,3 +17,8 @@ MAX_UPLOAD_FILES = int(
         3
     )
 )
+
+UPLOAD_FOLDER = os.getenv(
+    "UPLOAD_FOLDER",
+    "storage/uploads"
+)
