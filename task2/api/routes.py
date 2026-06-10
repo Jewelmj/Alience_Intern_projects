@@ -54,8 +54,15 @@ def home():
 
 @router.post("/upload")
 async def upload_files(files: list[UploadFile] = File(...)):
+    logger.info(
+        f"Upload request received with {len(files)} file(s)"
+    )
 
     if len(files) > MAX_UPLOAD_FILES:
+        logger.warning(
+            f"Upload rejected: received {len(files)} files, maximum allowed is {MAX_UPLOAD_FILES}"
+        )
+
         return {
             "status": "error",
             "message": f"Maximum {MAX_UPLOAD_FILES} files allowed"
@@ -68,6 +75,10 @@ async def upload_files(files: list[UploadFile] = File(...)):
         filename = file.filename.lower()
 
         if not filename.endswith(tuple(ALLOWED_EXTENSIONS)):
+            logger.warning(
+                f"Unsupported file type: {file.filename}"
+            )
+
             return {
                 "status": "error",
                 "message": f"Unsupported file type: {file.filename}"
@@ -82,12 +93,19 @@ async def upload_files(files: list[UploadFile] = File(...)):
                 page_count = len(pdf_reader.pages)
 
                 if page_count > MAX_PDF_PAGES:
+                    logger.warning(
+                        f"{file.filename} exceeds maximum page limit ({page_count}/{MAX_PDF_PAGES})"
+                    )
+                    
                     return {
                         "status": "error",
                         "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
                     }
 
             except Exception:
+                logger.error(
+                    f"Error occurred while processing PDF: {file.filename}"
+                )
                 return {
                     "status": "error",
                     "message": f"Unable to read PDF: {file.filename}"
@@ -102,9 +120,17 @@ async def upload_files(files: list[UploadFile] = File(...)):
                 await file.read()
             )
 
+        logger.info(
+            f"File saved successfully: {file_path.name}"
+        )
+
         saved_files.append(
             file_path.name
         )
+    
+    logger.info(
+        f"Upload completed successfully. Saved {len(saved_files)} file(s)"
+    )
 
     return {
         "status": "success",
