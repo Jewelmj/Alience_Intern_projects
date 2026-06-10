@@ -10,6 +10,9 @@ from config.settings import (
 )
 from config.logger import logger
 from schema.utils.file_storage import get_unique_filename
+from schema.utils.file_validation import (
+    is_allowed_extension
+)
 from agents.extraction.agent import (
     ExtractionAgent
 )
@@ -55,7 +58,7 @@ async def upload_files(files: list[UploadFile] = File(...)):
 
         filename = file.filename.lower()
 
-        if not filename.endswith(tuple(ALLOWED_EXTENSIONS)):
+        if not is_allowed_extension(filename, ALLOWED_EXTENSIONS):
             logger.warning(
                 f"Unsupported file type: {file.filename}"
             )
@@ -67,9 +70,11 @@ async def upload_files(files: list[UploadFile] = File(...)):
         
         content = await file.read()
 
-        page_count = 0
-        text_filename = None
-        characters = 0
+        metadata = {
+            "page_count": 0,
+            "characters": 0,
+            "text_file": None
+        }
         if filename.endswith(".pdf"):
 
             try:
@@ -79,15 +84,15 @@ async def upload_files(files: list[UploadFile] = File(...)):
                     MAX_PDF_PAGES
                 )
 
+                logger.info(
+                    f"Extracted text saved: {metadata['text_file']}"
+                )
+
                 page_count = metadata["page_count"]
 
                 text_filename = metadata["text_file"]
 
                 characters = metadata["characters"]
-
-                logger.info(
-                    f"Extracted text saved: {text_filename}"
-                )
 
             except ValueError as e:
 
@@ -123,9 +128,7 @@ async def upload_files(files: list[UploadFile] = File(...)):
         saved_files.append(
             {
                 "filename": file_path.name,
-                "page_count": page_count,
-                "characters": characters,
-                "text_file": text_filename
+                **metadata
             }
         )
     
