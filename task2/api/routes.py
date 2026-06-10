@@ -7,13 +7,18 @@ from config.settings import (
     ALLOWED_EXTENSIONS,
     MAX_UPLOAD_FILES,
     UPLOAD_FOLDER,
-    MAX_PDF_PAGES
+    MAX_PDF_PAGES,
+    EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
 
 router = APIRouter()
 
 Path(UPLOAD_FOLDER).mkdir(
+    parents=True,
+    exist_ok=True
+)
+Path(EXTRACTED_TEXT_FOLDER).mkdir(
     parents=True,
     exist_ok=True
 )
@@ -59,6 +64,25 @@ def extract_pdf_text(pdf_file):
 
     return text, page_count
 
+def save_extracted_text(
+    filename: str,
+    text: str
+):
+    txt_path = (
+        Path(EXTRACTED_TEXT_FOLDER)
+        / f"{Path(filename).stem}.txt"
+    )
+
+    with open(
+        txt_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        file.write(text)
+
+    return txt_path.name
+
 @router.get("/")
 def home():
     return {"message": "API is running"}
@@ -98,6 +122,9 @@ async def upload_files(files: list[UploadFile] = File(...)):
         
         content = await file.read()
 
+        text = ""
+        page_count = 0
+        text_filename = None
         if filename.endswith(".pdf"):
 
             try:
@@ -114,6 +141,14 @@ async def upload_files(files: list[UploadFile] = File(...)):
                         "status": "error",
                         "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
                     }
+
+                text_filename = save_extracted_text(
+                    file.filename,
+                    text
+                )
+                logger.info(
+                    f"Extracted text saved: {text_filename}"
+                )
 
             except Exception:
                 logger.error(
@@ -136,7 +171,12 @@ async def upload_files(files: list[UploadFile] = File(...)):
         )
 
         saved_files.append(
-            file_path.name
+            {
+                "filename": file_path.name,
+                "page_count": page_count,
+                "characters": len(text),
+                "text_file": text_filename
+            }
         )
     
     logger.info(

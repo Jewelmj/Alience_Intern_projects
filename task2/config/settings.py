@@ -44,3 +44,8 @@ LOG_LEVEL = os.getenv(
     "LOG_LEVEL",
     "INFO"
 )
+
+EXTRACTED_TEXT_FOLDER = os.getenv(
+    "EXTRACTED_TEXT_FOLDER",
+    "storage/extracted_text"
+)
