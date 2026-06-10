@@ -100,3 +100,88 @@ def test_maximum_allowed_uploads():
     data = response.json()
 
     assert data["status"] == "success"
+
+
+def test_more_than_maximum_uploads():
+
+    files = []
+
+    for i in range(4):
+
+        pdf = open(
+            f"storage/uploads/test_{(i % 3) + 1}.pdf",
+            "rb"
+        )
+
+        files.append(
+            (
+                "files",
+                (
+                    f"test_{i}.pdf",
+                    pdf,
+                    "application/pdf"
+                )
+            )
+        )
+
+    response = client.post(
+        "/upload",
+        files=files
+    )
+
+    for _, (_, pdf, _) in files:
+        pdf.close()
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "error"
+
+def test_unsupported_extension():
+
+    invalid_file = Path(
+        "storage/uploads/test_invalid.txt"
+    )
+
+    with open(invalid_file, "rb") as txt:
+
+        response = client.post(
+            "/upload",
+            files={
+                "files": (
+                    invalid_file.name,
+                    txt,
+                    "text/plain"
+                )
+            }
+        )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "error"
+
+def test_missing_file():
+
+    response = client.post(
+        "/upload"
+    )
+
+    assert response.status_code == 422
+
+def test_empty_filename():
+
+    response = client.post(
+        "/upload",
+        files={
+            "files": (
+                "",
+                b"dummy content",
+                "application/pdf"
+            )
+        }
+    )
+
+    assert response.status_code in [200, 422]

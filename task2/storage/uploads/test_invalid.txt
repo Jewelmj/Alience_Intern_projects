@@ -1,0 +1,1 @@
+hello this is to test if the validator is properly filtering txt files.

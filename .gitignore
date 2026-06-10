@@ -7,6 +7,7 @@ task2/storage/uploads/*
 !task2/storage/uploads/test_1.pdf
 !task2/storage/uploads/test_2.pdf
 !task2/storage/uploads/test_3.pdf
+!task2/storage/uploads/test_invalid.txt
 
 task2/storage/extracted_text/*
 !task2/storage/extracted_text/.gitkeep
