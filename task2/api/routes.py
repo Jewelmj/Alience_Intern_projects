@@ -47,6 +47,18 @@ def get_unique_filename(file_path: Path) -> Path:
 
         counter += 1
 
+def extract_pdf_text(pdf_file):
+    reader = PdfReader(pdf_file)
+
+    page_count = len(reader.pages)
+
+    text = ""
+
+    for page in reader.pages:
+        text += page.extract_text() or ""
+
+    return text, page_count
+
 @router.get("/")
 def home():
     return {"message": "API is running"}
@@ -89,8 +101,9 @@ async def upload_files(files: list[UploadFile] = File(...)):
         if filename.endswith(".pdf"):
 
             try:
-                pdf_reader = PdfReader(BytesIO(content))
-                page_count = len(pdf_reader.pages)
+                text, page_count = extract_pdf_text(
+                    BytesIO(content)
+                )
 
                 if page_count > MAX_PDF_PAGES:
                     logger.warning(
@@ -116,9 +129,7 @@ async def upload_files(files: list[UploadFile] = File(...)):
         file_path = get_unique_filename(file_path)
 
         with open(file_path, "wb") as buffer:
-            buffer.write(
-                await file.read()
-            )
+            buffer.write(content)
 
         logger.info(
             f"File saved successfully: {file_path.name}"
