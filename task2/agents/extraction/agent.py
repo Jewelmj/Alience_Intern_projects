@@ -6,6 +6,7 @@ from schema.utils.pdf_extraction import (
 from schema.utils.file_storage import (
     save_extracted_text
 )
+from config.logger import logger
 
 
 class ExtractionAgent:
@@ -30,6 +31,10 @@ class ExtractionAgent:
         text_filename = save_extracted_text(
             filename,
             text
+        )
+
+        logger.info(
+            f"Extracted text saved: {text_filename}"
         )
 
         return {

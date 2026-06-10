@@ -2,16 +2,13 @@ from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
 
 from config.settings import (
-    ALLOWED_EXTENSIONS,
     MAX_UPLOAD_FILES,
     UPLOAD_FOLDER,
-    MAX_PDF_PAGES,
     EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
-from schema.utils.file_storage import get_unique_filename
-from schema.utils.file_validation import (
-    is_allowed_extension
+from agents.ingestion.agent import (
+    IngestionAgent
 )
 from agents.extraction.agent import (
     ExtractionAgent
@@ -29,6 +26,9 @@ Path(EXTRACTED_TEXT_FOLDER).mkdir(
 )
 
 extraction_agent = ExtractionAgent()
+ingestion_agent = IngestionAgent(
+    extraction_agent
+)
 
 
 @router.get("/")
@@ -56,81 +56,29 @@ async def upload_files(files: list[UploadFile] = File(...)):
 
     for file in files:
 
-        filename = file.filename.lower()
+        content = await file.read()
 
-        if not is_allowed_extension(filename, ALLOWED_EXTENSIONS):
-            logger.warning(
-                f"Unsupported file type: {file.filename}"
+        try:
+            result = ingestion_agent.process_file(file, content)
+            saved_files.append(result)
+
+        except ValueError as e:
+            logger.warning(str(e))
+
+            return {
+                "status": "error",
+                "message": str(e)
+            }
+
+        except Exception as e:
+            logger.error(
+                f"Failed to process {file.filename}: {e}"
             )
 
             return {
                 "status": "error",
-                "message": f"Unsupported file type: {file.filename}"
+                "message": f"Unable to process file: {file.filename}"
             }
-        
-        content = await file.read()
-
-        metadata = {
-            "page_count": 0,
-            "characters": 0,
-            "text_file": None
-        }
-        if filename.endswith(".pdf"):
-
-            try:
-                metadata = extraction_agent.process(
-                    file.filename,
-                    content,
-                    MAX_PDF_PAGES
-                )
-
-                logger.info(
-                    f"Extracted text saved: {metadata['text_file']}"
-                )
-
-                page_count = metadata["page_count"]
-
-                text_filename = metadata["text_file"]
-
-                characters = metadata["characters"]
-
-            except ValueError as e:
-
-                logger.warning(str(e))
-
-                return {
-                    "status": "error",
-                    "message": str(e)
-                }
-
-            except Exception as e:
-
-                logger.error(
-                    f"Error occurred while processing PDF {file.filename}: {e}"
-                )
-
-                return {
-                    "status": "error",
-                    "message": f"Unable to read PDF: {file.filename}"
-                }
-            
-        file_path = Path(UPLOAD_FOLDER) / file.filename
-
-        file_path = get_unique_filename(file_path)
-
-        with open(file_path, "wb") as buffer:
-            buffer.write(content)
-
-        logger.info(
-            f"File saved successfully: {file_path.name}"
-        )
-
-        saved_files.append(
-            {
-                "filename": file_path.name,
-                **metadata
-            }
-        )
     
     logger.info(
         f"Upload completed successfully. Saved {len(saved_files)} file(s)"
