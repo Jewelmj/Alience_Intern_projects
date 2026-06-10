@@ -7,13 +7,18 @@ from config.settings import (
     ALLOWED_EXTENSIONS,
     MAX_UPLOAD_FILES,
     UPLOAD_FOLDER,
-    MAX_PDF_PAGES
+    MAX_PDF_PAGES,
+    EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
 
 router = APIRouter()
 
 Path(UPLOAD_FOLDER).mkdir(
+    parents=True,
+    exist_ok=True
+)
+Path(EXTRACTED_TEXT_FOLDER).mkdir(
     parents=True,
     exist_ok=True
 )
@@ -46,6 +51,37 @@ def get_unique_filename(file_path: Path) -> Path:
             return new_path
 
         counter += 1
+
+def extract_pdf_text(pdf_file):
+    reader = PdfReader(pdf_file)
+
+    page_count = len(reader.pages)
+
+    text = ""
+
+    for page in reader.pages:
+        text += page.extract_text() or ""
+
+    return text, page_count
+
+def save_extracted_text(
+    filename: str,
+    text: str
+):
+    txt_path = (
+        Path(EXTRACTED_TEXT_FOLDER)
+        / f"{Path(filename).stem}.txt"
+    )
+
+    with open(
+        txt_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        file.write(text)
+
+    return txt_path.name
 
 @router.get("/")
 def home():
@@ -86,11 +122,15 @@ async def upload_files(files: list[UploadFile] = File(...)):
         
         content = await file.read()
 
+        text = ""
+        page_count = 0
+        text_filename = None
         if filename.endswith(".pdf"):
 
             try:
-                pdf_reader = PdfReader(BytesIO(content))
-                page_count = len(pdf_reader.pages)
+                text, page_count = extract_pdf_text(
+                    BytesIO(content)
+                )
 
                 if page_count > MAX_PDF_PAGES:
                     logger.warning(
@@ -101,6 +141,14 @@ async def upload_files(files: list[UploadFile] = File(...)):
                         "status": "error",
                         "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
                     }
+
+                text_filename = save_extracted_text(
+                    file.filename,
+                    text
+                )
+                logger.info(
+                    f"Extracted text saved: {text_filename}"
+                )
 
             except Exception:
                 logger.error(
@@ -116,16 +164,19 @@ async def upload_files(files: list[UploadFile] = File(...)):
         file_path = get_unique_filename(file_path)
 
         with open(file_path, "wb") as buffer:
-            buffer.write(
-                await file.read()
-            )
+            buffer.write(content)
 
         logger.info(
             f"File saved successfully: {file_path.name}"
         )
 
         saved_files.append(
-            file_path.name
+            {
+                "filename": file_path.name,
+                "page_count": page_count,
+                "characters": len(text),
+                "text_file": text_filename
+            }
         )
     
     logger.info(
