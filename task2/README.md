@@ -64,6 +64,10 @@ chat_engine/
 
 ├── api/
 ├── agents/
+│   ├── conversation/
+│   ├── embedding/
+│   ├── extraction/ 
+│   ├── ingestion/
 ├── config/
 ├── logs/
 ├── models/
