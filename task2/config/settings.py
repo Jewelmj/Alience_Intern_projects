@@ -29,3 +29,18 @@ UPLOAD_FOLDER = os.getenv(
     "UPLOAD_FOLDER",
     "storage/uploads"
 )
+
+LOG_FOLDER = os.getenv(
+    "LOG_FOLDER",
+    "logs"
+)
+
+LOG_FILE = os.getenv(
+    "LOG_FILE",
+    "app.log"
+)
+
+LOG_LEVEL = os.getenv(
+    "LOG_LEVEL",
+    "INFO"
+)

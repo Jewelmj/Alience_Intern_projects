@@ -2,12 +2,14 @@ from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
 from io import BytesIO
 from pypdf import PdfReader
+
 from config.settings import (
     ALLOWED_EXTENSIONS,
     MAX_UPLOAD_FILES,
     UPLOAD_FOLDER,
     MAX_PDF_PAGES
 )
+from config.logger import logger
 
 router = APIRouter()
 
