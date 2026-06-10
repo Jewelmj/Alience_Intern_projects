@@ -2,11 +2,14 @@ info.txt
 __pycache__/
 *.pyc
 
-storage/uploads/*
-!storage/uploads/.gitkeep
+task2/storage/uploads/*
+!task2/storage/uploads/.gitkeep
+!task2/storage/uploads/test_1.pdf
+!task2/storage/uploads/test_2.pdf
+!task2/storage/uploads/test_3.pdf
 
-storage/extracted_text/*
-!storage/extracted_text/.gitkeep
+task2/storage/extracted_text/*
+!task2/storage/extracted_text/.gitkeep
 
-storage/vectordb/*
-!storage/vectordb/.gitkeep
+task2/storage/vectordb/*
+!task2/storage/vectordb/.gitkeep
