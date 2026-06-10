@@ -1,7 +1,6 @@
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
 from io import BytesIO
-from pypdf import PdfReader
 
 from config.settings import (
     ALLOWED_EXTENSIONS,
@@ -11,6 +10,8 @@ from config.settings import (
     EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
+from schema.utils.pdf_extraction import extract_pdf_text
+from schema.utils.file_storage import get_unique_filename, save_extracted_text
 
 router = APIRouter()
 
@@ -23,65 +24,6 @@ Path(EXTRACTED_TEXT_FOLDER).mkdir(
     exist_ok=True
 )
 
-def get_unique_filename(file_path: Path) -> Path:
-    """
-    Prevent overwriting existing files.
-    Example:
-        report.pdf
-        report_1.pdf
-        report_2.pdf
-    """
-
-    if not file_path.exists():
-        return file_path
-
-    stem = file_path.stem
-    suffix = file_path.suffix
-
-    counter = 1
-
-    while True:
-
-        new_path = (
-            file_path.parent
-            / f"{stem}_{counter}{suffix}"
-        )
-
-        if not new_path.exists():
-            return new_path
-
-        counter += 1
-
-def extract_pdf_text(pdf_file):
-    reader = PdfReader(pdf_file)
-
-    page_count = len(reader.pages)
-
-    text = ""
-
-    for page in reader.pages:
-        text += page.extract_text() or ""
-
-    return text, page_count
-
-def save_extracted_text(
-    filename: str,
-    text: str
-):
-    txt_path = (
-        Path(EXTRACTED_TEXT_FOLDER)
-        / f"{Path(filename).stem}.txt"
-    )
-
-    with open(
-        txt_path,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        file.write(text)
-
-    return txt_path.name
 
 @router.get("/")
 def home():
