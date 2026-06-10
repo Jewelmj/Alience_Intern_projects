@@ -1,6 +1,5 @@
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File
-from io import BytesIO
 
 from config.settings import (
     ALLOWED_EXTENSIONS,
@@ -10,8 +9,10 @@ from config.settings import (
     EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
-from schema.utils.pdf_extraction import extract_pdf_text
-from schema.utils.file_storage import get_unique_filename, save_extracted_text
+from schema.utils.file_storage import get_unique_filename
+from agents.extraction.agent import (
+    ExtractionAgent
+)
 
 router = APIRouter()
 
@@ -23,6 +24,8 @@ Path(EXTRACTED_TEXT_FOLDER).mkdir(
     parents=True,
     exist_ok=True
 )
+
+extraction_agent = ExtractionAgent()
 
 
 @router.get("/")
@@ -64,38 +67,43 @@ async def upload_files(files: list[UploadFile] = File(...)):
         
         content = await file.read()
 
-        text = ""
         page_count = 0
         text_filename = None
+        characters = 0
         if filename.endswith(".pdf"):
 
             try:
-                text, page_count = extract_pdf_text(
-                    BytesIO(content)
-                )
-
-                if page_count > MAX_PDF_PAGES:
-                    logger.warning(
-                        f"{file.filename} exceeds maximum page limit ({page_count}/{MAX_PDF_PAGES})"
-                    )
-                    
-                    return {
-                        "status": "error",
-                        "message": f"{file.filename} exceeds {MAX_PDF_PAGES} pages"
-                    }
-
-                text_filename = save_extracted_text(
+                metadata = extraction_agent.process(
                     file.filename,
-                    text
+                    content,
+                    MAX_PDF_PAGES
                 )
+
+                page_count = metadata["page_count"]
+
+                text_filename = metadata["text_file"]
+
+                characters = metadata["characters"]
+
                 logger.info(
                     f"Extracted text saved: {text_filename}"
                 )
 
-            except Exception:
+            except ValueError as e:
+
+                logger.warning(str(e))
+
+                return {
+                    "status": "error",
+                    "message": str(e)
+                }
+
+            except Exception as e:
+
                 logger.error(
-                    f"Error occurred while processing PDF: {file.filename}"
+                    f"Error occurred while processing PDF {file.filename}: {e}"
                 )
+
                 return {
                     "status": "error",
                     "message": f"Unable to read PDF: {file.filename}"
@@ -116,7 +124,7 @@ async def upload_files(files: list[UploadFile] = File(...)):
             {
                 "filename": file_path.name,
                 "page_count": page_count,
-                "characters": len(text),
+                "characters": characters,
                 "text_file": text_filename
             }
         )
