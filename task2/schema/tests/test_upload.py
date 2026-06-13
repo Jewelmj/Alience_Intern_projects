@@ -6,19 +6,39 @@ from main import app
 
 client = TestClient(app)
 
-TEST_FILE = Path(
+TEST_PDF_1 = Path(
     "storage/uploads/test_1.pdf"
+)
+
+TEST_PDF_2 = Path(
+    "storage/uploads/test_2.pdf"
+)
+
+TEST_PDF_3 = Path(
+    "storage/uploads/test_3.pdf"
+)
+
+TEST_PNG = Path(
+    "storage/uploads/test_1.png"
+)
+
+TEST_BLANK_PNG = Path(
+    "storage/uploads/test_blank.png"
+)
+
+TEST_JPEG = Path(
+    "storage/uploads/test_jpg.jpeg"
 )
 
 def test_single_pdf_upload():
 
-    with open(TEST_FILE, "rb") as pdf:
+    with open(TEST_PDF_1, "rb") as pdf:
 
         response = client.post(
             "/upload",
             files={
                 "files": (
-                    TEST_FILE.name,
+                    TEST_PDF_1.name,
                     pdf,
                     "application/pdf"
                 )
@@ -31,19 +51,12 @@ def test_single_pdf_upload():
 
     assert data["status"] == "success"
 
+
 def test_multiple_valid_uploads():
 
-    file1 = Path(
-        "storage/uploads/test_1.pdf"
-    )
-
-    file2 = Path(
-        "storage/uploads/test_2.pdf"
-    )
-
     with (
-        open(file1, "rb") as pdf1,
-        open(file2, "rb") as pdf2
+        open(TEST_PDF_1, "rb") as pdf1,
+        open(TEST_PDF_2, "rb") as pdf2
     ):
 
         response = client.post(
@@ -52,7 +65,7 @@ def test_multiple_valid_uploads():
                 (
                     "files",
                     (
-                        file1.name,
+                        TEST_PDF_1.name,
                         pdf1,
                         "application/pdf"
                     )
@@ -60,7 +73,7 @@ def test_multiple_valid_uploads():
                 (
                     "files",
                     (
-                        file2.name,
+                        TEST_PDF_2.name,
                         pdf2,
                         "application/pdf"
                     )
@@ -74,24 +87,42 @@ def test_multiple_valid_uploads():
 
     assert data["status"] == "success"
 
+
 def test_maximum_allowed_uploads():
 
-    file1 = Path("storage/uploads/test_1.pdf")
-    file2 = Path("storage/uploads/test_2.pdf")
-    file3 = Path("storage/uploads/test_3.pdf")
-
     with (
-        open(file1, "rb") as pdf1,
-        open(file2, "rb") as pdf2,
-        open(file3, "rb") as pdf3
+        open(TEST_PDF_1, "rb") as pdf1,
+        open(TEST_PDF_2, "rb") as pdf2,
+        open(TEST_PDF_3, "rb") as pdf3
     ):
 
         response = client.post(
             "/upload",
             files=[
-                ("files", (file1.name, pdf1, "application/pdf")),
-                ("files", (file2.name, pdf2, "application/pdf")),
-                ("files", (file3.name, pdf3, "application/pdf"))
+                (
+                    "files",
+                    (
+                        TEST_PDF_1.name,
+                        pdf1,
+                        "application/pdf"
+                    )
+                ),
+                (
+                    "files",
+                    (
+                        TEST_PDF_2.name,
+                        pdf2,
+                        "application/pdf"
+                    )
+                ),
+                (
+                    "files",
+                    (
+                        TEST_PDF_3.name,
+                        pdf3,
+                        "application/pdf"
+                    )
+                )
             ]
         )
 
@@ -100,7 +131,6 @@ def test_maximum_allowed_uploads():
     data = response.json()
 
     assert data["status"] == "success"
-
 
 def test_more_than_maximum_uploads():
 
@@ -185,3 +215,80 @@ def test_empty_filename():
     )
 
     assert response.status_code in [200, 422]
+
+def test_png_upload():
+
+    with open(TEST_PNG, "rb") as image:
+
+        response = client.post(
+            "/upload",
+            files={
+                "files": (
+                    TEST_PNG.name,
+                    image,
+                    "image/png"
+                )
+            }
+        )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "success"
+
+    assert data["files"][0]["text_file"] is not None
+
+    assert data["files"][0]["characters"] >= 0
+
+
+def test_jpeg_upload():
+
+    with open(TEST_JPEG, "rb") as image:
+
+        response = client.post(
+            "/upload",
+            files={
+                "files": (
+                    TEST_JPEG.name,
+                    image,
+                    "image/jpeg"
+                )
+            }
+        )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "success"
+
+    assert data["files"][0]["text_file"] is not None
+
+    assert data["files"][0]["characters"] >= 0
+
+
+def test_blank_image_upload():
+
+    with open(TEST_BLANK_PNG, "rb") as image:
+
+        response = client.post(
+            "/upload",
+            files={
+                "files": (
+                    TEST_BLANK_PNG.name,
+                    image,
+                    "image/png"
+                )
+            }
+        )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "success"
+
+    assert data["files"][0]["text_file"] is not None
+
+    assert data["files"][0]["characters"] >= 0
