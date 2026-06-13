@@ -50,7 +50,7 @@ class ExtractionAgent:
             )
 
             logger.info(
-                f"OCR extracted text: {text}"
+                f"OCR extracted {len(text)} characters from {filename}"
             )
 
             page_count = None

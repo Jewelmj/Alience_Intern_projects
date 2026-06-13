@@ -36,7 +36,7 @@ class IngestionAgent:
         }
 
         if filename.endswith(
-            (".pdf", ".png", ".jpg", ".jpeg")
+            (".pdf", ".png", ".jpg", ".jpeg", ".txt")
         ):
 
             metadata = self.extraction_agent.process(

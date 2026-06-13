@@ -12,9 +12,13 @@ def extract_image_text(content: bytes):
 
     logger.info("Opening image")
 
-    image = Image.open(
-        BytesIO(content)
-    )
+    try:
+        image = Image.open(
+            BytesIO(content)
+        )
+    except Exception as e:
+        logger.error(f"Failed to open image: {e}")
+        raise ValueError("Invalid image file")
 
     logger.info("Running OCR")
 
