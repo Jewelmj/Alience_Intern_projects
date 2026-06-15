@@ -49,3 +49,17 @@ EXTRACTED_TEXT_FOLDER = os.getenv(
     "EXTRACTED_TEXT_FOLDER",
     "storage/extracted_text"
 )
+
+CHUNK_SIZE = int(
+    os.getenv(
+        "CHUNK_SIZE",
+        500
+    )
+)
+
+CHUNK_OVERLAP = int(
+    os.getenv(
+        "CHUNK_OVERLAP",
+        100
+    )
+)
