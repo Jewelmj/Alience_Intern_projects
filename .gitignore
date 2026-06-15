@@ -11,6 +11,8 @@ task2/storage/uploads/*
 !task2/storage/uploads/test_1.png
 !task2/storage/uploads/test_blank.png
 !task2/storage/uploads/test_jpg.jpeg
+storage/chunks/*
+!storage/chunks/.gitkeep
 
 task2/storage/extracted_text/*
 !task2/storage/extracted_text/.gitkeep

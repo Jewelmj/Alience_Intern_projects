@@ -7,3 +7,5 @@ pytest
 httpx
 
 easyocr
+
+langchain-text-splitters
