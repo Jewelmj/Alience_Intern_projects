@@ -50,13 +50,27 @@ def test_chunk_metadata_saved():
         / filename
     )
 
-    assert output_file.exists()
-    with open(output_file) as f:
-        data = json.load(f)
+    try:
 
-    assert len(data) == 2
-    assert data[0]["chunk_id"] == 0
-    assert data[1]["chunk_id"] == 1
+        assert output_file.exists()
 
-    output_file.unlink()
+        with open(output_file) as f:
+            data = json.load(f)
+
+        assert len(data) == 2
+        assert data[0]["chunk_id"] == 0
+        assert data[1]["chunk_id"] == 1
+        assert data[0]["source_file"] == "sample.pdf"
+        assert data[0]["text"] == "chunk one"
+        assert data[0]["chunk_length"] == len("chunk one")
+
+        assert data[1]["source_file"] == "sample.pdf"
+        assert data[1]["text"] == "chunk two"
+        assert data[1]["chunk_length"] == len("chunk two")
+
+    finally:
+
+        output_file.unlink(
+            missing_ok=True
+        )
 
