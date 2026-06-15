@@ -27,7 +27,7 @@ def extract_image_text(content: bytes):
     )
 
     logger.info(
-        f"OCR raw result: {result}"
+        f"OCR detected {len(result)} text regions"
     )
 
     text = "\n".join(
@@ -36,7 +36,7 @@ def extract_image_text(content: bytes):
     )
 
     logger.info(
-        f"OCR final text: {text}"
+        f"OCR extracted {len(text)} characters"
     )
 
     return text

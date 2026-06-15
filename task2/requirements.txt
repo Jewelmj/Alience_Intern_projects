@@ -11,3 +11,5 @@ easyocr
 langchain-text-splitters
 
 sentence-transformers
+
+pymongo

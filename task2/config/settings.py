@@ -68,3 +68,11 @@ EMBEDDING_MODEL = os.getenv(
     "EMBEDDING_MODEL",
     "all-MiniLM-L6-v2"
 )
+
+MONGO_URI = os.getenv(
+    "MONGO_URI"
+)
+
+MONGO_DB_NAME = os.getenv(
+    "MONGO_DB_NAME"
+)
