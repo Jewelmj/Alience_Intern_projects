@@ -9,3 +9,5 @@ httpx
 easyocr
 
 langchain-text-splitters
+
+pymongo

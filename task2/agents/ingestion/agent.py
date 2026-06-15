@@ -9,6 +9,9 @@ from config.settings import (
 from schema.utils.file_storage import (get_unique_filename,)
 from schema.utils.file_validation import (is_allowed_extension)
 from config.logger import logger
+from database.document_repository import (
+    create_document
+)
 
 
 class IngestionAgent:
@@ -58,8 +61,19 @@ class IngestionAgent:
         logger.info(
             f"File saved successfully: {file_path.name}"
         )
+        
+        document = {
+            "filename": file_path.name,
+            **metadata
+        }
+        document_id = create_document(document)
+
+        logger.info(
+            f"Document metadata stored: {document_id}"
+        )
 
         return {
+            "document_id": document_id,
             "filename": file_path.name,
             **metadata
         }
