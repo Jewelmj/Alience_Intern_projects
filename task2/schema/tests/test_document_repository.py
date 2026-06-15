@@ -14,20 +14,24 @@ def test_create_and_get_document():
         }
     )
 
-    document = get_document(
-        document_id
-    )
+    try:
 
-    assert document is not None
+        document = get_document(
+            document_id
+        )
 
-    assert (
-        document["filename"]
-        == "test.pdf"
-    )
+        assert document is not None
 
-    delete_document(
-        document_id
-    )
+        assert (
+            document["filename"]
+            == "test.pdf"
+        )
+
+    finally:
+
+        delete_document(
+            document_id
+        )
 
 def test_update_document():
 
@@ -37,25 +41,31 @@ def test_update_document():
         }
     )
 
-    update_document(
-        document_id,
-        {
-            "filename": "new.pdf"
-        }
-    )
+    try:
 
-    document = get_document(
-        document_id
-    )
+        result = update_document(
+            document_id,
+            {
+                "filename": "new.pdf"
+            }
+        )
 
-    assert (
-        document["filename"]
-        == "new.pdf"
-    )
+        assert result.modified_count == 1
 
-    delete_document(
-        document_id
-    )
+        document = get_document(
+            document_id
+        )
+
+        assert (
+            document["filename"]
+            == "new.pdf"
+        )
+
+    finally:
+
+        delete_document(
+            document_id
+        )
 
 def test_delete_document():
 
@@ -65,7 +75,7 @@ def test_delete_document():
         }
     )
 
-    delete_document(
+    result = delete_document(
         document_id
     )
 
@@ -74,3 +84,4 @@ def test_delete_document():
     )
 
     assert document is None
+    assert result.deleted_count == 1
