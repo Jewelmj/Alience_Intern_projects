@@ -63,3 +63,8 @@ CHUNK_OVERLAP = int(
         100
     )
 )
+
+EMBEDDING_MODEL = os.getenv(
+    "EMBEDDING_MODEL",
+    "all-MiniLM-L6-v2"
+)
