@@ -109,7 +109,7 @@ class IngestionAgent:
             "chunk_count": len(chunks),
             "vector_file": vector_file
         }
-        document_id = "local-test"
+        document_id = create_document(document)
 
         logger.info(
             "Skipping MongoDB storage"
