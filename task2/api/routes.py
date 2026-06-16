@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 from fastapi import APIRouter, UploadFile, File
 
 from config.settings import (
@@ -16,7 +17,7 @@ from agents.extraction.agent import (
 from agents.embedding.agent import (
     EmbeddingAgent
 )
-from schema.models.response import (UploadResponse, HomeResponse)
+from schema.models.response import (UploadResponse, HomeResponse, ErrorResponse)
 
 router = APIRouter()
 
@@ -41,7 +42,7 @@ def home():
     return {"message": "API is running"}
 
 
-@router.post("/upload",response_model=UploadResponse)
+@router.post("/upload",response_model=Union[UploadResponse,ErrorResponse])
 async def upload_files(files: list[UploadFile] = File(...)):
     logger.info(
         f"Upload request received with {len(files)} file(s)"

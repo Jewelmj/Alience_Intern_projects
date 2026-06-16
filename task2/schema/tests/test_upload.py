@@ -50,6 +50,14 @@ def test_single_pdf_upload():
     data = response.json()
 
     assert data["status"] == "success"
+    assert "files" in data
+
+    file_data = data["files"][0]
+
+    assert "document_id" in file_data
+    assert "filename" in file_data
+    assert "characters" in file_data
+    assert "text_file" in file_data
 
 
 def test_multiple_valid_uploads():

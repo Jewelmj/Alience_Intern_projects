@@ -40,7 +40,7 @@ def test_chunk_metadata_saved():
         "chunk two"
     ]
 
-    filename = save_chunk_metadata(
+    metadata, filename = save_chunk_metadata(
         "sample.pdf",
         chunks
     )
