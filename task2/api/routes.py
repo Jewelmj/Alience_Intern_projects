@@ -16,6 +16,7 @@ from agents.extraction.agent import (
 from agents.embedding.agent import (
     EmbeddingAgent
 )
+from schema.models.response import (UploadResponse, HomeResponse)
 
 router = APIRouter()
 
@@ -35,12 +36,12 @@ ingestion_agent = IngestionAgent(
 )
 
 
-@router.get("/")
+@router.get("/",response_model=HomeResponse)
 def home():
     return {"message": "API is running"}
 
 
-@router.post("/upload")
+@router.post("/upload",response_model=UploadResponse)
 async def upload_files(files: list[UploadFile] = File(...)):
     logger.info(
         f"Upload request received with {len(files)} file(s)"
