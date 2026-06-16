@@ -47,4 +47,4 @@ def save_chunk_metadata(
             ensure_ascii=False
         )
 
-    return output_file.name
+    return metadata, output_file.name

@@ -13,6 +13,9 @@ from agents.ingestion.agent import (
 from agents.extraction.agent import (
     ExtractionAgent
 )
+from agents.embedding.agent import (
+    EmbeddingAgent
+)
 
 router = APIRouter()
 
@@ -25,9 +28,10 @@ Path(EXTRACTED_TEXT_FOLDER).mkdir(
     exist_ok=True
 )
 
+embedding_agent = EmbeddingAgent()
 extraction_agent = ExtractionAgent()
 ingestion_agent = IngestionAgent(
-    extraction_agent
+    extraction_agent, embedding_agent
 )
 
 
@@ -71,13 +75,13 @@ async def upload_files(files: list[UploadFile] = File(...)):
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to process {file.filename}: {e}"
             )
 
             return {
                 "status": "error",
-                "message": f"Unable to process file: {file.filename}"
+                "message": str(e)
             }
     
     logger.info(

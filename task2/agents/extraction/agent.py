@@ -77,5 +77,6 @@ class ExtractionAgent:
         return {
             "page_count": page_count,
             "characters": len(text),
-            "text_file": text_filename
+            "text_file": text_filename,
+            "text": text
         }

@@ -1,0 +1,68 @@
+[
+    {
+        "chunk_id": 0,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 493,
+        "text": "1\nEC3011E – Wireless Communication\nProblem Sheet 3\n1) Derive an expression for the reuse distance in terms of the cluster size for the channel assignment\nalgorithm associated with hexagonal cells. Also obtain the expression for the cluster sizeNin terms\nof the channel assignment parameters.\n2) A cellular service provider decides to use a digital TDMA scheme that can tolerate a worst-case\nsignal-to-interference ratio (SIR) of15dB for the base-to-mobile link. Assume that all the interfering"
+    },
+    {
+        "chunk_id": 1,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 493,
+        "text": "base stations are located at approximately equal distance equal to the co-channel reuse distance and\ntransmit equal power. The path loss exponent isn= 4.\nFind the optimal value of the cluster sizeNfor the following cases:\n(a) Omni-directional antennas are used at the base station.\n(b)120 ◦ sectored antennas are used at the base station.\n(c)60 ◦ sectored antennas are used at the base station.\n(d) Should sectoring be used? If yes, which configuration should be preferred:120 ◦ or60 ◦?Justify"
+    },
+    {
+        "chunk_id": 2,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 438,
+        "text": "(d) Should sectoring be used? If yes, which configuration should be preferred:120 ◦ or60 ◦?Justify\nyour answer based on SIR and system capacity.\n3) Suppose that a binary signal±s ℓ(t)of energyEis transmitted over a quasi-static fading channel, and\nthe received signal is given byr ℓ(t) =±αs ℓ(t) +n(t)wheren(t)is zero-mean white Gaussian noise\nwith single-sided power spectral densityN 0, andαis the channel gain whose probability density"
+    },
+    {
+        "chunk_id": 3,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 494,
+        "text": "with single-sided power spectral densityN 0, andαis the channel gain whose probability density\nfunction isp(α) = 0.1δ(α) + 0.9δ(α−2).Determine the average probability of bit error,P b,for a\nreceiver that employs a filter matched tos ℓ(t).\n4) Three independent Rayleigh fading branches have average SNRs given by\n¯γ1 = 5dB,¯γ 2 = 10dB,¯γ 3 = 15dB.\n(a) Compute the outage probability for the selection combining (SC) scenario.\n(b) Compute the outage probability for maximal ratio combining (MRC)."
+    },
+    {
+        "chunk_id": 4,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 463,
+        "text": "(b) Compute the outage probability for maximal ratio combining (MRC).\n(c) Compare the diversity gain obtained in both cases.\n(d) Compute the improvement in SNR for MRC over SC at a target outage probability of10 −3.\n5) Consider a wireless communication system employing the Alamouti transmit diversity scheme. Let\nthe two complex symbols to be transmitted bes 1 ands 2. The transmitted signal matrix over two\nsymbol durations is given by\nS=\n\u0014\ns1 −s∗\n2\ns2 s∗\n1\n\u0015\n."
+    },
+    {
+        "chunk_id": 5,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 473,
+        "text": "symbol durations is given by\nS=\n\u0014\ns1 −s∗\n2\ns2 s∗\n1\n\u0015\n.\nAssume a flat Rayleigh fading channel with complex channel gainsh 1 andh 2 between each transmit\nantenna and the receiver, which remain constant over two consecutive symbol intervals. The received\nsignals at the two time instants are affected by additive white Gaussian noise (AWGN) samplesn 1\nandn 2, respectively.\n(a) Write the received signal expressions for the two consecutive symbol intervals in terms ofs 1,s 2,"
+    },
+    {
+        "chunk_id": 6,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 406,
+        "text": "h1,h 2, and the noise samples.\n(b) Derive the maximum likelihood (ML) decision metric that allows the receiver to independently\ndetects 1 ands 2.\n(c) Show that the equivalent combined channel gain for each symbol is proportional to\n|h1|2 +|h 2|2,\nand hence obtain the expression for the instantaneous SNR of each detected symbol.2\n(d) Briefly comment on the diversity order achieved by the Alamouti scheme."
+    },
+    {
+        "chunk_id": 7,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 479,
+        "text": "(d) Briefly comment on the diversity order achieved by the Alamouti scheme.\n6) In a synchronous DS-CDMA system, two users transmit simultaneously over the same channel using\ndifferent spreading codes.\nThe transmitted binary data bits are:\nUser 1:d 1 = 1User 2:d 2 = 0\nThe spreading codes of length 8 chips are:\nc1 = [1−1 1−1 1−1 1−1]\nc2 = [1 1−1−1 1 1−1−1]\nAssume bipolar representation:\n1→+1,0→ −1\nAnswer the following:\n(a) Convert the data bits of both users into bipolar form."
+    },
+    {
+        "chunk_id": 8,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 437,
+        "text": "1→+1,0→ −1\nAnswer the following:\n(a) Convert the data bits of both users into bipolar form.\n(b) Determine the spread transmitted sequence of each user.\n(c) Obtain the composite received signal assuming equal received power and no noise.\n(d) At the receiver, recover the data of User 1 using correlation detection.\n(e) Verify whether the spreading codes are orthogonal and explain how orthogonality affects multiuser\ninterference in CDMA."
+    },
+    {
+        "chunk_id": 9,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 497,
+        "text": "interference in CDMA.\n(f) If a narrowband jammer affects only two chips of the received sequence, explain why the original\ndata can still be recovered reliably.\n7) Consider the following configuration for a cellular system employing OFDM: Cell bandwidth=\n10MHz,Required data rate= 40Mbps,Number of subcarriers= 64,Number of pilot subcarriers=\n4,Guard band= 10%of the cell bandwidth,Maximum RMS delay spread of the wireless channel=\n1.6µs.\n(a) Determine the following:\ni) Number of data subcarriers"
+    },
+    {
+        "chunk_id": 10,
+        "source_file": "EC3011E_ProblemSheet3.pdf",
+        "chunk_length": 478,
+        "text": "1.6µs.\n(a) Determine the following:\ni) Number of data subcarriers\nii) Cyclic prefix length\niii) Symbol time per subcarrier\niv) Constellation size of the modulation\n(b) Assume that the system includes8pilot subcarriers for channel estimation and employs an adaptive\nmodulation scheme where it uses the modulation schemes QPSK, 16-QAM, and 64-QAM along\nwith convolutional coding of code rates\n1\n2 , 2\n3 , 3\n4 .\nCalculate the minimum and maximum data rates supported by the system."
+    }
+]
