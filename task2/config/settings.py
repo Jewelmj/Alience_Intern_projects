@@ -76,3 +76,13 @@ MONGO_URI = os.getenv(
 MONGO_DB_NAME = os.getenv(
     "MONGO_DB_NAME"
 )
+
+CHROMA_DB_PATH = os.getenv(
+    "CHROMA_DB_PATH",
+    "storage/chromadb"
+)
+
+CHROMA_COLLECTION = os.getenv(
+    "CHROMA_COLLECTION",
+    "documents"
+)

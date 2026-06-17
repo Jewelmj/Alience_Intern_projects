@@ -15,6 +15,9 @@ from schema.utils.chunk_storage import (
 from schema.utils.vector_storage import (
     save_vectors
 )
+from database.vector_repository import (
+    save_embeddings
+)
 from schema.utils.file_storage import (get_unique_filename,)
 from schema.utils.file_validation import (is_allowed_extension)
 from config.logger import logger
@@ -81,6 +84,10 @@ class IngestionAgent:
             self.embedding_agent.generate_embeddings(
                 chunk_metadata
             )
+        )
+
+        save_embeddings(
+            embedding_records
         )
 
         vector_file = save_vectors(

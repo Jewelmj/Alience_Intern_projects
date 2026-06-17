@@ -48,16 +48,15 @@ class EmbeddingAgent:
         ):
 
             embedding_records.append(
-                {
-                    "chunk_id": chunk["chunk_id"],
-                    "source_file": chunk["source_file"],
-                    "chunk_length": chunk["chunk_length"],
-
-                    "vector_dimension": len(vector),
-
-                    "embedding": vector.tolist()
-                }
-            )
+            {
+                "chunk_id": chunk["chunk_id"],
+                "source_file": chunk["source_file"],
+                "chunk_length": chunk["chunk_length"],
+                "text": chunk["text"],
+                "vector_dimension": len(vector),
+                "embedding": vector.tolist()
+            }
+        )
 
         logger.info(
             f"Generated {len(embedding_records)} embeddings"
