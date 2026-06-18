@@ -8,7 +8,6 @@ from config.settings import (
 )
 
 LOG_DIR = Path(LOG_FOLDER)
-LOG_DIR.mkdir(exist_ok=True)
 
 logging.basicConfig(
     filename=LOG_DIR / LOG_FILE,

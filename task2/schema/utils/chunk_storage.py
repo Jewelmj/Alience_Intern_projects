@@ -5,11 +5,6 @@ CHUNK_FOLDER = Path(
     "storage/chunks"
 )
 
-CHUNK_FOLDER.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
 
 def save_chunk_metadata(
     filename,

@@ -5,11 +5,6 @@ VECTOR_FOLDER = Path(
     "storage/vectors"
 )
 
-VECTOR_FOLDER.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
 
 def save_vectors(
     filename,

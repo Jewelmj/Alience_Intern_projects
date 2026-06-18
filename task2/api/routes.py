@@ -24,16 +24,6 @@ from dependencies.agents import (
 
 router = APIRouter()
 
-Path(UPLOAD_FOLDER).mkdir(
-    parents=True,
-    exist_ok=True
-)
-Path(EXTRACTED_TEXT_FOLDER).mkdir(
-    parents=True,
-    exist_ok=True
-)
-
-
 @router.get("/",response_model=HomeResponse)
 def home():
     return {"message": "API is running"}
