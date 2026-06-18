@@ -297,6 +297,60 @@ def test_blank_image_upload():
 
     assert data["status"] == "success"
 
-    assert data["files"][0]["text_file"] is not None
+    assert len(data["files"]) == 0
 
-    assert data["files"][0]["characters"] >= 0
+    assert len(data["warnings"]) == 1
+
+    assert (
+        "no extractable text"
+        in data["warnings"][0].lower()
+    )
+
+def test_upload_continues_when_blank_image_exists():
+
+    with (
+        open(TEST_PDF_1, "rb") as pdf,
+        open(TEST_BLANK_PNG, "rb") as image
+    ):
+
+        response = client.post(
+            "/upload",
+            files=[
+                (
+                    "files",
+                    (
+                        TEST_PDF_1.name,
+                        pdf,
+                        "application/pdf"
+                    )
+                ),
+                (
+                    "files",
+                    (
+                        TEST_BLANK_PNG.name,
+                        image,
+                        "image/png"
+                    )
+                )
+            ]
+        )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "success"
+
+    assert len(data["files"]) == 1
+
+    assert (
+        data["files"][0]["filename"]
+        is not None
+    )
+
+    assert len(data["warnings"]) == 1
+
+    assert (
+        "no extractable text"
+        in data["warnings"][0].lower()
+    )

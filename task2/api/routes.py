@@ -1,4 +1,4 @@
-from pathlib import Path
+import warnings
 from typing import Union
 from fastapi import APIRouter, UploadFile, File
 
@@ -20,6 +20,10 @@ from schema.models.response import (
 from dependencies.agents import (
     ingestion_agent,
     retrieval_agent
+)
+
+from schema.exceptions.ingestion import (
+    EmptyDocumentError
 )
 
 router = APIRouter()
@@ -54,6 +58,17 @@ async def upload_files(files: list[UploadFile] = File(...)):
         try:
             result = ingestion_agent.process_file(file, content)
             saved_files.append(result)
+        
+        except EmptyDocumentError as exc:
+            warnings.append(
+                str(exc)
+            )
+
+            logger.warning(
+                str(exc)
+            )
+
+            continue
 
         except ValueError as e:
             logger.warning(str(e))

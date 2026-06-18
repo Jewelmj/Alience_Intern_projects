@@ -24,7 +24,9 @@ from config.logger import logger
 from database.document_repository import (
     create_document
 )
-
+from schema.exceptions.ingestion import (
+    EmptyDocumentError
+)
 
 class IngestionAgent:
 
@@ -61,6 +63,17 @@ class IngestionAgent:
                 file.filename,
                 content,
                 MAX_PDF_PAGES
+            )
+        
+        text = metadata["text"]
+
+        if not text.strip():
+            logger.warning(
+                f"No text extracted from {file.filename}"
+            )
+
+            raise EmptyDocumentError(
+                f"No extractable text found in {file.filename}"
             )
 
         chunks = chunk_text(
