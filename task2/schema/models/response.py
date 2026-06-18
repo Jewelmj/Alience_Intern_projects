@@ -16,6 +16,8 @@ class UploadResponse(BaseModel):
 
     status: str
     files: list[FileResponse]
+    session_id: str
+    warnings: list[str] = []
 
 class ErrorResponse(BaseModel):
 
@@ -34,7 +36,7 @@ class SourceReference(BaseModel):
 class ChatRequest(BaseModel):
 
     query: str
-    session_id: str | None = None
+    session_id: str
 
 
 class ChatResponse(BaseModel):

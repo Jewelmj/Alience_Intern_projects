@@ -14,7 +14,7 @@ def save_embeddings(
     for record in embedding_records:
 
         ids.append(
-            f"{record['source_file']}_{record['chunk_id']}"
+            f"{record['session_id']}_{record['source_file']}_{record['chunk_id']}"
         )
 
         embeddings.append(
@@ -29,6 +29,9 @@ def save_embeddings(
             {
                 "source_file":
                     record["source_file"],
+
+                "session_id":
+                    record["session_id"],
 
                 "chunk_id":
                     record["chunk_id"],
@@ -46,16 +49,15 @@ def save_embeddings(
     )
 
 
-def search_similar(
-    query_embedding,
-    top_k=5
-):
-
+def search_similar(query_embedding, session_id, top_k=5):
     return collection.query(
         query_embeddings=[
             query_embedding
         ],
-        n_results=top_k
+        n_results=top_k,
+        where={
+            "session_id": session_id
+        }
     )
 
 def delete_document_embeddings(

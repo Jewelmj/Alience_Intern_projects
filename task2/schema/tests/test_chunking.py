@@ -42,7 +42,8 @@ def test_chunk_metadata_saved():
 
     metadata, filename = save_chunk_metadata(
         "sample.pdf",
-        chunks
+        chunks,
+        "test-session"
     )
 
     output_file = (

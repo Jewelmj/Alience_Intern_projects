@@ -34,11 +34,7 @@ class RetrievalAgent:
             1.0 - (distance / 2.0)
         )
 
-    def retrieve(
-        self,
-        query,
-        top_k=None
-    ):
+    def retrieve(self, query, session_id, top_k=None):
 
         if top_k is None:
             top_k = RETRIEVAL_TOP_K
@@ -54,10 +50,7 @@ class RetrievalAgent:
             .tolist()
         )
 
-        results = search_similar(
-            query_embedding,
-            top_k
-        )
+        results = search_similar(query_embedding, session_id, top_k)
 
         documents = results.get(
             "documents",
@@ -109,11 +102,7 @@ class RetrievalAgent:
 
         return chunks
 
-    def chat(
-        self,
-        query
-    ):
-
+    def chat(self, query, session_id):
         query = query.strip()
 
         if not query:
@@ -121,9 +110,7 @@ class RetrievalAgent:
                 "Query cannot be empty"
             )
 
-        chunks = self.retrieve(
-            query
-        )
+        chunks = self.retrieve(query, session_id)
 
         if not chunks:
 

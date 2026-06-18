@@ -10,12 +10,14 @@ def test_embedding_generation():
     chunks = [
         {
             "chunk_id": 0,
+            "session_id": "test-session",
             "source_file": "sample.pdf",
             "chunk_length": 100,
             "text": "FastAPI is a web framework"
         },
         {
             "chunk_id": 1,
+            "session_id": "test-session",
             "source_file": "sample.pdf",
             "chunk_length": 120,
             "text": "LangChain helps build RAG systems"

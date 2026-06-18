@@ -19,6 +19,7 @@ client = TestClient(app)
 def _seed_embeddings(
     text,
     source_file="test_chat.pdf",
+    session_id="test-session",
     chunk_id=0
 ):
 
@@ -27,6 +28,7 @@ def _seed_embeddings(
     chunks = [
         {
             "chunk_id": chunk_id,
+            "session_id": session_id,
             "source_file": source_file,
             "chunk_length": len(text),
             "text": text
@@ -49,7 +51,8 @@ def test_chat_empty_query():
     response = client.post(
         "/chat",
         json={
-            "query": "   "
+            "query": "   ",
+            "session_id": "test-session"
         }
     )
 
@@ -66,7 +69,8 @@ def test_chat_not_found_without_relevant_documents():
     response = client.post(
         "/chat",
         json={
-            "query": "quantum teleportation in uploaded files"
+            "query": "quantum teleportation in uploaded files",
+            "session_id": "test-session"
         }
     )
 
@@ -95,7 +99,8 @@ def test_chat_with_relevant_context(
     response = client.post(
         "/chat",
         json={
-            "query": "What is ZyxUniqueToken98765?"
+            "query": "What is ZyxUniqueToken98765?",
+            "session_id": "test-session"
         }
     )
 
@@ -129,7 +134,8 @@ def test_chat_ollama_failure_returns_error(
     response = client.post(
         "/chat",
         json={
-            "query": "Tell me about databases"
+            "query": "Tell me about databases",
+            "session_id": "test-session"
         }
     )
 
@@ -140,3 +146,35 @@ def test_chat_ollama_failure_returns_error(
     assert data["status"] == "error"
 
     mock_generate.assert_called_once()
+
+
+@patch(
+    "agents.retrieval.agent.generate_chat_response",
+    return_value="FastAPI is a Python web framework."
+)
+def test_session_isolation(
+    mock_generate
+):
+
+    _seed_embeddings(
+        "FastAPI is a modern Python web framework.",
+        source_file="fastapi.pdf",
+        session_id="session-a"
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "query": "What is FastAPI?",
+            "session_id": "session-b"
+        }
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "not_found"
+    assert data["sources"] == []
+
+    mock_generate.assert_not_called()

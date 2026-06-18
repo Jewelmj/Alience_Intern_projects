@@ -16,6 +16,7 @@ def test_vector_file_created():
     chunks = [
         {
             "chunk_id": 0,
+            "session_id": "test-session",
             "source_file": "sample.pdf",
             "chunk_length": 100,
             "text": "FastAPI is a web framework"
