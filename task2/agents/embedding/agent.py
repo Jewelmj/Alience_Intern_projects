@@ -17,9 +17,7 @@ class EmbeddingAgent:
             f"Loading embedding model: {EMBEDDING_MODEL}"
         )
 
-        self.model = SentenceTransformer(
-            EMBEDDING_MODEL
-        )
+        self._model = None
 
     def generate_embeddings(
         self,
@@ -63,3 +61,18 @@ class EmbeddingAgent:
         )
 
         return embedding_records
+    
+    @property
+    def model(self):
+
+        if self._model is None:
+
+            logger.info(
+                f"Loading embedding model: {EMBEDDING_MODEL}"
+            )
+
+            self._model = SentenceTransformer(
+                EMBEDDING_MODEL
+            )
+
+        return self._model
