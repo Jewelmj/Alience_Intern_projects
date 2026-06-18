@@ -49,16 +49,15 @@ def save_embeddings(
     )
 
 
-def search_similar(
-    query_embedding,
-    top_k=5
-):
-
+def search_similar(query_embedding, session_id, top_k=5):
     return collection.query(
         query_embeddings=[
             query_embedding
         ],
-        n_results=top_k
+        n_results=top_k,
+        where={
+            "session_id": session_id
+        }
     )
 
 def delete_document_embeddings(

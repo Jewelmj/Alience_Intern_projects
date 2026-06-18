@@ -51,6 +51,7 @@ def test_similarity_search():
 
     results = search_similar(
         query_embedding,
+        "test-session",
         top_k=1
     )
 

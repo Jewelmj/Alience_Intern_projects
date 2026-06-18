@@ -108,7 +108,7 @@ def chat(request: ChatRequest):
     logger.info(f"Chat request received: {request.query!r}")
 
     try:
-        result = retrieval_agent.chat(request.query)
+        result = retrieval_agent.chat(request.query, request.session_id)
 
     except ValueError as exc:
 

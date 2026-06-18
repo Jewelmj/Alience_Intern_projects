@@ -36,7 +36,7 @@ class SourceReference(BaseModel):
 class ChatRequest(BaseModel):
 
     query: str
-    session_id: str | None = None
+    session_id: str
 
 
 class ChatResponse(BaseModel):
