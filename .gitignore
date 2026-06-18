@@ -22,5 +22,8 @@ task2/storage/extracted_text/*
 task2/storage/vectordb/*
 !task2/storage/vectordb/.gitkeep
 
+task2/storage/chromadb/*
+!task2/storage/chromadb/.gitkeep
+
 task2/logs/*.log
 !task2/logs/.gitkeep

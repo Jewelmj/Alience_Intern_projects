@@ -44,6 +44,11 @@ curl.exe -X POST `
   -F "files=@storage/uploads/test_sample.pdf" `
   http://127.0.0.1:8000/upload
 ```
+```bash
+curl.exe -X POST http://127.0.0.1:8000/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"query\": \"What is covered in the document?\"}"
+```
 
 ## Example Response
 
