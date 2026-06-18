@@ -126,6 +126,80 @@ with st.sidebar:
             f"Active Session:\n{st.session_state.session_id}"
         )
 
-st.write(
-    "Chat functionality coming next."
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+        if (
+            message["role"] == "assistant"
+            and "sources" in message
+            and message["sources"]
+        ):
+
+            with st.expander("Sources"):
+                for source in (message["sources"]):
+                    st.write(f"File: {source['source_file']}")
+
+                    st.write(f"Chunk: {source['chunk_id']}")
+
+                    st.write(f"Similarity: {source['similarity_score']}")
+
+                    st.write(source["text_preview"])
+
+                    st.divider()
+
+prompt = st.chat_input(
+    "Ask a question about your documents"
 )
+
+if prompt:
+    if not st.session_state.session_id:
+        st.warning("Upload documents before chatting.")
+    else:
+        st.session_state.messages.append(
+            {
+                "role": "user",
+                "content": prompt
+            }
+        )
+
+        try:
+            response = requests.post(
+                f"{API_BASE_URL}/chat",
+                json={
+                    "query": prompt,
+                    "session_id":
+                        st.session_state.session_id
+                }
+            )
+
+            data = response.json()
+
+            if data["status"] == "success":
+
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": data["answer"],
+                        "sources": data["sources"]
+                    }
+                )
+
+            elif data["status"] == "not_found":
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": data["answer"],
+                        "sources": []
+                    }
+                )
+
+            else:
+                st.error(data["message"])
+
+        except requests.exceptions.ConnectionError:
+            st.error("Unable to connect to FastAPI backend.")
+        except Exception as exc:
+            st.error(str(exc))
+
+        st.rerun()
