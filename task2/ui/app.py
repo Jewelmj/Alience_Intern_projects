@@ -71,7 +71,10 @@ with st.sidebar:
 
                 response = requests.post(
                     f"{API_BASE_URL}/upload",
-                    files=files
+                    files=files,
+                    data={
+                        "session_id": st.session_state.session_id
+                    }
                 )
 
                 data = response.json()

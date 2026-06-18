@@ -1,6 +1,5 @@
-import warnings
 from typing import Union
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Form
 
 from config.settings import (
     MAX_UPLOAD_FILES,
@@ -35,7 +34,7 @@ def home():
 
 
 @router.post("/upload",response_model=Union[UploadResponse,ErrorResponse])
-async def upload_files(files: list[UploadFile] = File(...)):
+async def upload_files(files: list[UploadFile] = File(...), session_id: str | None = Form(None)):
     logger.info(
         f"Upload request received with {len(files)} file(s)"
     )
@@ -52,7 +51,8 @@ async def upload_files(files: list[UploadFile] = File(...)):
 
     saved_files = []
     warnings = []
-    session_id = SessionManager.create_session()
+    if not session_id:
+        session_id = (SessionManager.create_session())
 
     for file in files:
 
