@@ -14,7 +14,7 @@ def save_embeddings(
     for record in embedding_records:
 
         ids.append(
-            f"{record['source_file']}_{record['chunk_id']}"
+            f"{record['session_id']}_{record['source_file']}_{record['chunk_id']}"
         )
 
         embeddings.append(
@@ -29,6 +29,9 @@ def save_embeddings(
             {
                 "source_file":
                     record["source_file"],
+
+                "session_id":
+                    record["session_id"],
 
                 "chunk_id":
                     record["chunk_id"],

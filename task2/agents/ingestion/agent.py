@@ -81,10 +81,7 @@ class IngestionAgent:
         )
 
         chunk_metadata, chunk_metadata_file = (
-            save_chunk_metadata(
-                file.filename,
-                chunks
-            )
+            save_chunk_metadata(file.filename,chunks, session_id)
         )
 
         logger.info(

@@ -27,6 +27,7 @@ def _seed_embeddings(
     chunks = [
         {
             "chunk_id": chunk_id,
+            "session_id": "test-session",
             "source_file": source_file,
             "chunk_length": len(text),
             "text": text
