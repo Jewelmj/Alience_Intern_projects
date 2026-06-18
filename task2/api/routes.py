@@ -98,23 +98,12 @@ async def upload_files(files: list[UploadFile] = File(...)):
     }
 
 
-@router.post(
-    "/chat",
-    response_model=Union[ChatResponse, ErrorResponse]
-)
-def chat(
-    request: ChatRequest
-):
-
-    logger.info(
-        f"Chat request received: {request.query!r}"
-    )
+@router.post("/chat",response_model=Union[ChatResponse, ErrorResponse])
+def chat(request: ChatRequest):
+    logger.info(f"Chat request received: {request.query!r}")
 
     try:
-
-        result = retrieval_agent.chat(
-            request.query
-        )
+        result = retrieval_agent.chat(request.query)
 
     except ValueError as exc:
 
