@@ -16,6 +16,8 @@ class UploadResponse(BaseModel):
 
     status: str
     files: list[FileResponse]
+    session_id: str
+    warnings: list[str] = []
 
 class ErrorResponse(BaseModel):
 

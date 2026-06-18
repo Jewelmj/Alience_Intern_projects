@@ -34,7 +34,7 @@ class IngestionAgent:
         self.extraction_agent = extraction_agent
         self.embedding_agent = embedding_agent
 
-    def process_file(self,file,content):
+    def process_file(self,file,content, session_id):
 
         filename = file.filename.lower()
 
@@ -125,6 +125,7 @@ class IngestionAgent:
 
         document = {
             "filename": file_path.name,
+            "session_id": session_id,
             **metadata,
             "chunk_count": len(chunks),
             "vector_file": vector_file

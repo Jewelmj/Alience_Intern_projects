@@ -25,6 +25,7 @@ from dependencies.agents import (
 from schema.exceptions.ingestion import (
     EmptyDocumentError
 )
+from schema.session.manager import SessionManager
 
 router = APIRouter()
 
@@ -50,13 +51,15 @@ async def upload_files(files: list[UploadFile] = File(...)):
         }
 
     saved_files = []
+    warnings = []
+    session_id = SessionManager.create_session()
 
     for file in files:
 
         content = await file.read()
 
         try:
-            result = ingestion_agent.process_file(file, content)
+            result = ingestion_agent.process_file(file, content, session_id)
             saved_files.append(result)
         
         except EmptyDocumentError as exc:
@@ -94,7 +97,9 @@ async def upload_files(files: list[UploadFile] = File(...)):
 
     return {
         "status": "success",
-        "files": saved_files
+        "session_id": session_id,
+        "files": saved_files,
+        "warnings": warnings
     }
 
 

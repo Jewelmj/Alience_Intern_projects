@@ -6,18 +6,13 @@ CHUNK_FOLDER = Path(
 )
 
 
-def save_chunk_metadata(
-    filename,
-    chunks
-):
-
+def save_chunk_metadata(filename, chunks, session_id):
     metadata = []
-
     for idx, chunk in enumerate(chunks):
-
         metadata.append(
             {
                 "chunk_id": idx,
+                "session_id": session_id,
                 "source_file": filename,
                 "chunk_length": len(chunk),
                 "text": chunk

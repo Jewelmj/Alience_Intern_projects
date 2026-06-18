@@ -48,6 +48,7 @@ class EmbeddingAgent:
             embedding_records.append(
             {
                 "chunk_id": chunk["chunk_id"],
+                "session_id": chunk["session_id"],
                 "source_file": chunk["source_file"],
                 "chunk_length": chunk["chunk_length"],
                 "text": chunk["text"],
