@@ -17,7 +17,16 @@ from agents.extraction.agent import (
 from agents.embedding.agent import (
     EmbeddingAgent
 )
-from schema.models.response import (UploadResponse, HomeResponse, ErrorResponse)
+from agents.retrieval.agent import (
+    RetrievalAgent
+)
+from schema.models.response import (
+    UploadResponse,
+    HomeResponse,
+    ErrorResponse,
+    ChatRequest,
+    ChatResponse
+)
 
 router = APIRouter()
 
@@ -34,6 +43,9 @@ embedding_agent = EmbeddingAgent()
 extraction_agent = ExtractionAgent()
 ingestion_agent = IngestionAgent(
     extraction_agent, embedding_agent
+)
+retrieval_agent = RetrievalAgent(
+    embedding_agent
 )
 
 
@@ -94,3 +106,46 @@ async def upload_files(files: list[UploadFile] = File(...)):
         "status": "success",
         "files": saved_files
     }
+
+
+@router.post(
+    "/chat",
+    response_model=Union[ChatResponse, ErrorResponse]
+)
+def chat(
+    request: ChatRequest
+):
+
+    logger.info(
+        f"Chat request received: {request.query!r}"
+    )
+
+    try:
+
+        result = retrieval_agent.chat(
+            request.query
+        )
+
+    except ValueError as exc:
+
+        logger.warning(str(exc))
+
+        return {
+            "status": "error",
+            "message": str(exc)
+        }
+
+    except Exception as exc:
+
+        logger.exception(
+            f"Chat request failed: {exc}"
+        )
+
+        return {
+            "status": "error",
+            "message": str(exc)
+        }
+
+    result["session_id"] = request.session_id
+
+    return result

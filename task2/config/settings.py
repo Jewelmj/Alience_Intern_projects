@@ -86,3 +86,39 @@ CHROMA_COLLECTION = os.getenv(
     "CHROMA_COLLECTION",
     "documents"
 )
+
+RETRIEVAL_TOP_K = int(
+    os.getenv(
+        "RETRIEVAL_TOP_K",
+        5
+    )
+)
+
+RELEVANCE_MAX_DISTANCE = float(
+    os.getenv(
+        "RELEVANCE_MAX_DISTANCE",
+        1.2
+    )
+)
+
+OLLAMA_BASE_URL = os.getenv(
+    "OLLAMA_BASE_URL",
+    "http://localhost:11434"
+)
+
+OLLAMA_MODEL = os.getenv(
+    "OLLAMA_MODEL",
+    "llama3.2"
+)
+
+OLLAMA_TIMEOUT = int(
+    os.getenv(
+        "OLLAMA_TIMEOUT",
+        120
+    )
+)
+
+NOT_FOUND_MESSAGE = os.getenv(
+    "NOT_FOUND_MESSAGE",
+    "I could not find information about that in the uploaded documents."
+)

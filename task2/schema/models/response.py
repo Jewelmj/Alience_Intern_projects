@@ -21,3 +21,25 @@ class ErrorResponse(BaseModel):
 
     status: str
     message: str
+
+
+class SourceReference(BaseModel):
+
+    source_file: str
+    chunk_id: int
+    similarity_score: float
+    text_preview: str | None = None
+
+
+class ChatRequest(BaseModel):
+
+    query: str
+    session_id: str | None = None
+
+
+class ChatResponse(BaseModel):
+
+    status: str
+    answer: str
+    sources: list[SourceReference]
+    session_id: str | None = None
