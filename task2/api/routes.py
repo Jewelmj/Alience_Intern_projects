@@ -8,24 +8,18 @@ from config.settings import (
     EXTRACTED_TEXT_FOLDER
 )
 from config.logger import logger
-from agents.ingestion.agent import (
-    IngestionAgent
-)
-from agents.extraction.agent import (
-    ExtractionAgent
-)
-from agents.embedding.agent import (
-    EmbeddingAgent
-)
-from agents.retrieval.agent import (
-    RetrievalAgent
-)
+
 from schema.models.response import (
     UploadResponse,
     HomeResponse,
     ErrorResponse,
     ChatRequest,
     ChatResponse
+)
+
+from dependencies.agents import (
+    ingestion_agent,
+    retrieval_agent
 )
 
 router = APIRouter()
@@ -37,15 +31,6 @@ Path(UPLOAD_FOLDER).mkdir(
 Path(EXTRACTED_TEXT_FOLDER).mkdir(
     parents=True,
     exist_ok=True
-)
-
-embedding_agent = EmbeddingAgent()
-extraction_agent = ExtractionAgent()
-ingestion_agent = IngestionAgent(
-    extraction_agent, embedding_agent
-)
-retrieval_agent = RetrievalAgent(
-    embedding_agent
 )
 
 
