@@ -130,6 +130,4 @@ def chat(request: ChatRequest):
             "message": str(exc)
         }
 
-    result["session_id"] = request.session_id
-
     return result

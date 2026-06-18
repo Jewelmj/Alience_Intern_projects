@@ -122,3 +122,8 @@ NOT_FOUND_MESSAGE = os.getenv(
     "NOT_FOUND_MESSAGE",
     "I could not find information about that in the uploaded documents."
 )
+
+API_BASE_URL = os.getenv(
+    "API_BASE_URL",
+    "http://127.0.0.1:8000"
+)

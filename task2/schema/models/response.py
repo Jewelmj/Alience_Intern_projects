@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class HomeResponse(BaseModel):
     message: str
@@ -17,7 +17,7 @@ class UploadResponse(BaseModel):
     status: str
     files: list[FileResponse]
     session_id: str
-    warnings: list[str] = []
+    warnings: list[str] = Field(default_factory=list)
 
 class ErrorResponse(BaseModel):
 
@@ -44,4 +44,3 @@ class ChatResponse(BaseModel):
     status: str
     answer: str
     sources: list[SourceReference]
-    session_id: str | None = None

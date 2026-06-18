@@ -1,17 +1,24 @@
+# api
 fastapi
 uvicorn
+httpx
+
+# Core
 python-multipart
 python-dotenv
 
-pytest
-httpx
-
+# AI / NLP
 easyocr
-
 langchain-text-splitters
-
 sentence-transformers
 
+# DB
 pymongo
-
 chromadb
+
+# UI
+streamlit
+requests
+
+# Development
+pytest
