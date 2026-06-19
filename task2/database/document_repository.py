@@ -22,6 +22,20 @@ def get_document(document_id):
         }
     )
 
+def get_old_documents(
+    cutoff_date
+):
+
+    return list(
+        documents.find(
+            {
+                "uploaded_at": {
+                    "$lt": cutoff_date
+                }
+            }
+        )
+    )
+
 def update_document(
     document_id,
     updates

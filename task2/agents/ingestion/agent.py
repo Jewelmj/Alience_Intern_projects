@@ -5,6 +5,9 @@ from config.settings import (
     MAX_PDF_PAGES,
     UPLOAD_FOLDER
 )
+
+from datetime import datetime
+
 from schema.utils.text_chunking import (
     chunk_text
 )
@@ -122,15 +125,23 @@ class IngestionAgent:
 
         document = {
             "filename": file_path.name,
-            "session_id": session_id,
+
+            "uploaded_at": datetime.utcnow(),
+
             **metadata,
+
             "chunk_count": len(chunks),
-            "vector_file": vector_file
+
+            "chunk_metadata_file":
+                chunk_metadata_file,
+
+            "vector_file":
+                vector_file
         }
         document_id = create_document(document)
 
         logger.info(
-            "Skipping MongoDB storage"
+            f"Document metadata stored in MongoDB: {document_id}"
         )
 
         return {

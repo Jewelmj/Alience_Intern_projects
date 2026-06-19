@@ -1,6 +1,10 @@
 from typing import Union
 from fastapi import APIRouter, UploadFile, File, Form
 
+from schema.utils.document_cleanup import (
+    cleanup_old_documents
+)
+
 from config.settings import (
     MAX_UPLOAD_FILES,
     UPLOAD_FOLDER,
@@ -131,3 +135,15 @@ def chat(request: ChatRequest):
         }
 
     return result
+
+@router.post("/admin/cleanup")
+def cleanup():
+
+    deleted_count = (
+        cleanup_old_documents()
+    )
+
+    return {
+        "status": "success",
+        "deleted_documents": deleted_count
+    }
