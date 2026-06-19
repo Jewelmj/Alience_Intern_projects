@@ -23,12 +23,18 @@ class ExtractionAgent:
     ):
 
         extension = Path(filename).suffix.lower()
+        logger.info(
+            f"Document type detected: {extension}"
+        )
 
         if extension == ".pdf":
 
             text, page_count = extract_pdf_text(
                 BytesIO(content)
             )
+            logger.info(
+            f"{filename} contains {page_count} page(s)"
+        )
 
             if page_count > max_pdf_pages:
 
@@ -73,6 +79,12 @@ class ExtractionAgent:
         logger.info(
         f"Text saved successfully: {text_filename}"
     )
+        logger.info(
+            f"Extraction completed | "
+            f"File={filename} | "
+            f"Pages={page_count} | "
+            f"Characters={len(text)}"
+        )
 
         return {
             "page_count": page_count,
