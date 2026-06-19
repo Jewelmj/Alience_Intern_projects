@@ -27,3 +27,5 @@ task2/storage/chromadb/*
 
 task2/logs/*.log
 !task2/logs/.gitkeep
+
+.env
