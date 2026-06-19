@@ -162,6 +162,37 @@ curl.exe -X POST http://127.0.0.1:8000/chat ^
   ]
 }
 ```
+## Cleanup Utility
+
+Remove old documents and generated artifacts:
+
+```http
+POST /admin/cleanup
+```
+
+Retention period is configurable:
+
+```env
+FILE_RETENTION_DAYS=30
+```
+
+Cleanup removes:
+
+- MongoDB document metadata
+- ChromaDB embeddings
+- Uploaded files
+- Extracted text files
+- Chunk metadata files
+- Saved vector files
+
+Example response:
+
+```json
+{
+  "status": "success",
+  "deleted_documents": 3
+}
+```
 
 ## Project Status
 
