@@ -28,7 +28,7 @@ from dependencies.agents import (
 from schema.exceptions.ingestion import (
     EmptyDocumentError
 )
-from schema.session.manager import SessionManager
+from schema.session.session_manager import SessionManager
 
 router = APIRouter()
 

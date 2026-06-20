@@ -35,7 +35,8 @@ def format_context_block(
 
 def build_rag_messages(
     query,
-    chunks
+    chunks,
+    history_text
 ):
 
     context = format_context_block(
@@ -45,6 +46,8 @@ def build_rag_messages(
     user_content = (
         f"Context from uploaded documents:\n\n"
         f"{context}\n\n"
+        f"Conversation History:\n"
+        f"{history_text}\n\n"
         f"Question: {query}\n\n"
         f"{NOT_FOUND_INSTRUCTION}"
     )
