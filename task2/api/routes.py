@@ -30,6 +30,13 @@ from schema.exceptions.ingestion import (
 )
 from schema.session.session_manager import SessionManager
 
+from schema.models.feedback import (
+    FeedbackRequest
+)
+from dependencies.repositories import (
+    analytics_repository
+)
+
 router = APIRouter()
 
 @router.get("/",response_model=HomeResponse)
@@ -146,4 +153,29 @@ def cleanup():
     return {
         "status": "success",
         "deleted_documents": deleted_count
+    }
+
+@router.post("/feedback")
+def submit_feedback(request: FeedbackRequest):
+    if request.feedback not in ("helpful","not_helpful"):
+        return {
+            "status": "error",
+            "message": (
+                "Invalid feedback value"
+            )
+        }
+
+    result = analytics_repository.update_feedback(
+        request.interaction_id,
+        request.feedback
+    )
+
+    if result.matched_count == 0:
+        return {
+            "status": "error",
+            "message": "Interaction not found"
+        }
+
+    return {
+        "status": "success"
     }

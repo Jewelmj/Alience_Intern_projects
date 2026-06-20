@@ -44,3 +44,4 @@ class ChatResponse(BaseModel):
     status: str
     answer: str
     sources: list[SourceReference]
+    interaction_id: str | None = None

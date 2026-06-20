@@ -1,3 +1,7 @@
+import time
+import uuid
+from datetime import datetime
+
 from database.vector_repository import (
     search_similar
 )
@@ -10,6 +14,9 @@ from schema.utils.ollama_client import (
 )
 from schema.session.conversation_manager import (
     ConversationManager
+)
+from dependencies.repositories import (
+    analytics_repository
 )
 from config.settings import (
     RETRIEVAL_TOP_K,
@@ -113,17 +120,31 @@ class RetrievalAgent:
                 "Query cannot be empty"
             )
         
-        chunks = self.retrieve(query, session_id)
-        logger.info(f"Retrieved chunks: {chunks}")
-        print("\nCHUNKS FOUND:")
-        print(chunks)
-        print()
+        start_time = time.time()
+
+        interaction_id = (
+            str(uuid.uuid4())
+        )
+        
+        chunks = self.retrieve(
+            query, 
+            session_id
+        )
+
+        similarity_scores = [
+            chunk.get(
+                "similarity_score",
+                0.0
+            )
+            for chunk in chunks
+        ]
 
         if not chunks:
 
             return {
                 "status": "not_found",
                 "answer": NOT_FOUND_MESSAGE,
+                "interaction_id": interaction_id,
                 "sources": []
             }
         
@@ -142,6 +163,13 @@ class RetrievalAgent:
 
         try:
             answer = generate_chat_response(messages)
+            response_time_ms = int(
+                (
+                    time.time()
+                    - start_time
+                )
+                * 1000
+            )
 
             ConversationManager.add_turn(
                 session_id,
@@ -153,6 +181,34 @@ class RetrievalAgent:
                 session_id,
                 "assistant",
                 answer
+            )
+
+            analytics_repository.save(
+                {
+                    "interaction_id":
+                    interaction_id,
+
+                    "session_id":
+                    session_id,
+
+                    "query":
+                    query,
+
+                    "response_time_ms":
+                    response_time_ms,
+
+                    "retrieved_sources":
+                    len(chunks),
+
+                    "similarity_scores":
+                    similarity_scores,
+
+                    "created_at":
+                    datetime.utcnow(),
+
+                    "feedback":
+                    None
+                }
             )
 
         except OllamaError as exc:
@@ -177,5 +233,6 @@ class RetrievalAgent:
         return {
             "status": "success",
             "answer": answer,
+            "interaction_id": interaction_id,
             "sources": sources
         }
