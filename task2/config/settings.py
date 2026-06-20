@@ -97,7 +97,7 @@ RETRIEVAL_TOP_K = int(
 RELEVANCE_MAX_DISTANCE = float(
     os.getenv(
         "RELEVANCE_MAX_DISTANCE",
-        2.0
+        1.5
     )
 )
 

@@ -112,8 +112,12 @@ class RetrievalAgent:
             raise ValueError(
                 "Query cannot be empty"
             )
-
+        
         chunks = self.retrieve(query, session_id)
+        logger.info(f"Retrieved chunks: {chunks}")
+        print("\nCHUNKS FOUND:")
+        print(chunks)
+        print()
 
         if not chunks:
 
