@@ -8,6 +8,9 @@ from schema.utils.ollama_client import (
     generate_chat_response,
     OllamaError
 )
+from schema.session.conversation_manager import (
+    ConversationManager
+)
 from config.settings import (
     RETRIEVAL_TOP_K,
     RELEVANCE_MAX_DISTANCE,
@@ -119,16 +122,33 @@ class RetrievalAgent:
                 "answer": NOT_FOUND_MESSAGE,
                 "sources": []
             }
+        
+        history = (ConversationManager.get_history(session_id))
+
+        history_text = "\n".join(
+            f"{item['role']}: {item['message']}"
+            for item in history
+        )
 
         messages = build_rag_messages(
             query,
-            chunks
+            chunks,
+            history_text
         )
 
         try:
+            answer = generate_chat_response(messages)
 
-            answer = generate_chat_response(
-                messages
+            ConversationManager.add_turn(
+                session_id,
+                "user",
+                query
+            )
+
+            ConversationManager.add_turn(
+                session_id,
+                "assistant",
+                answer
             )
 
         except OllamaError as exc:
