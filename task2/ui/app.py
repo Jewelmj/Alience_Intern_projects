@@ -132,6 +132,53 @@ for message in st.session_state.messages:
 
         if (
             message["role"] == "assistant"
+            and "interaction_id" in message
+        ):
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button(
+                    "👍 Helpful",
+                    key=f"helpful_{message['interaction_id']}"
+                ):
+
+                    requests.post(
+                        f"{API_BASE_URL}/feedback",
+                        json={
+                            "interaction_id":
+                            message["interaction_id"],
+                            "feedback":
+                            "helpful"
+                        }
+                    )
+
+                    st.success(
+                        "Feedback recorded"
+                    )
+
+            with col2:
+                if st.button(
+                    "👎 Not Helpful",
+                    key=f"not_helpful_{message['interaction_id']}"
+                ):
+
+                    requests.post(
+                        f"{API_BASE_URL}/feedback",
+                        json={
+                            "interaction_id":
+                            message["interaction_id"],
+                            "feedback":
+                            "not_helpful"
+                        }
+                    )
+
+                    st.success(
+                        "Feedback recorded"
+                    )
+
+        if (
+            message["role"] == "assistant"
             and "sources" in message
             and message["sources"]
         ):
@@ -181,7 +228,8 @@ if prompt:
                     {
                         "role": "assistant",
                         "content": data["answer"],
-                        "sources": data["sources"]
+                        "sources": data["sources"],
+                        "interaction_id": data["interaction_id"]
                     }
                 )
 
@@ -190,7 +238,8 @@ if prompt:
                     {
                         "role": "assistant",
                         "content": data["answer"],
-                        "sources": []
+                        "sources": [],
+                        "interaction_id": data["interaction_id"]
                     }
                 )
 
