@@ -73,6 +73,9 @@ def cleanup_old_documents():
 
         for file_path in files_to_delete:
 
+            if file_path.name == ".gitkeep":
+                continue
+
             if file_path.exists():
 
                 file_path.unlink()
