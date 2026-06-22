@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from api.routes import router
 from schema.utils.startup import (
     initialize_storage
 )
+initialize_storage()
+
+from api.routes import router
 
 app = FastAPI()
-
-initialize_storage()
 
 app.include_router(router)

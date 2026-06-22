@@ -5,8 +5,22 @@ import easyocr
 import numpy as np
 from PIL import Image
 
-reader = easyocr.Reader(["en"])
+reader = None
 
+def get_reader():
+    global reader
+
+    if reader is None:
+
+        logger.info(
+            "Initializing EasyOCR"
+        )
+
+        reader = easyocr.Reader(
+            ["en"]
+        )
+
+    return reader
 
 def extract_image_text(content: bytes):
 
@@ -22,7 +36,7 @@ def extract_image_text(content: bytes):
 
     logger.info("Running OCR")
 
-    result = reader.readtext(
+    result = get_reader().readtext(
         np.array(image)
     )
 
