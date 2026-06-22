@@ -13,8 +13,6 @@ def initialize_storage():
         LOG_FOLDER,
         UPLOAD_FOLDER,
         EXTRACTED_TEXT_FOLDER,
-        "storage/chunks",
-        "storage/vectors",
         "storage/chromadb"
     ]
 
