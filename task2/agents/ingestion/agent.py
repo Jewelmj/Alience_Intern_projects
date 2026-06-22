@@ -12,12 +12,6 @@ from schema.utils.text_chunking import (
     chunk_text
 )
 
-from schema.utils.chunk_storage import (
-    save_chunk_metadata
-)
-from schema.utils.vector_storage import (
-    save_vectors
-)
 from database.vector_repository import (
     save_embeddings
 )
@@ -83,12 +77,20 @@ class IngestionAgent:
             metadata["text"]
         )
 
-        chunk_metadata, chunk_metadata_file = (
-            save_chunk_metadata(file.filename,chunks, session_id)
-        )
+        chunk_metadata = []
+        for idx, chunk in enumerate(chunks):
+            chunk_metadata.append(
+                {
+                    "chunk_id": idx,
+                    "session_id": session_id,
+                    "source_file": file.filename,
+                    "chunk_length": len(chunk),
+                    "text": chunk
+                }
+            )
 
         logger.info(
-            f"Chunk metadata saved: {chunk_metadata_file}"
+            f"Chunk metadata processed. total chunks: {len(chunk_metadata)}"
         )
         
         metadata.pop("text", None)
@@ -100,11 +102,6 @@ class IngestionAgent:
         )
 
         save_embeddings(
-            embedding_records
-        )
-
-        vector_file = save_vectors(
-            file.filename,
             embedding_records
         )
 
@@ -131,12 +128,6 @@ class IngestionAgent:
             **metadata,
 
             "chunk_count": len(chunks),
-
-            "chunk_metadata_file":
-                chunk_metadata_file,
-
-            "vector_file":
-                vector_file
         }
         document_id = create_document(document)
 
