@@ -46,6 +46,47 @@ cp .env.example .env
 
 Update values as needed before starting the application.
 
+## Docker Deployment
+
+### Prerequisites
+
+- Docker Desktop
+- MongoDB running locally
+- Ollama running locally
+
+### Configure Environment
+
+Update `.env` for Docker:
+
+```env
+MONGO_URI=mongodb://host.docker.internal:27017
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+API_BASE_URL=http://backend:8000
+```
+
+### Build and Run
+
+```bash
+docker compose up --build
+```
+
+### Stop Containers
+
+```bash
+docker compose down
+```
+
+### Persistent Storage
+
+The following directories are mounted as Docker volumes:
+
+- storage/uploads
+- storage/extracted_text
+- storage/chromadb
+- logs
+
+Uploaded documents, extracted text, embeddings, and logs remain available after container restarts.
+
 ## Optional GPU Acceleration
 
 Install a CUDA-enabled PyTorch build:
