@@ -11,21 +11,17 @@ task2/storage/uploads/*
 !task2/storage/uploads/test_1.png
 !task2/storage/uploads/test_blank.png
 !task2/storage/uploads/test_jpg.jpeg
-task2/storage/chunks/*
-!task2/storage/chunks/.gitkeep
-task2/storage/vectors/*
-!task2/storage/vectors/.gitkeep
 
 task2/storage/extracted_text/*
 !task2/storage/extracted_text/.gitkeep
-
-task2/storage/vectordb/*
-!task2/storage/vectordb/.gitkeep
 
 task2/storage/chromadb/*
 !task2/storage/chromadb/.gitkeep
 
 task2/logs/*.log
 !task2/logs/.gitkeep
+
+documentation/alience_ppt_raw.txt
+documentation/Allianz_PPT.pdf
 
 .env
