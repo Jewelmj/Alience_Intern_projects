@@ -106,9 +106,15 @@ class RetrievalAgent:
                 }
             )
 
-        logger.info(
-            f"Kept {len(chunks)} chunk(s) after relevance filtering"
-        )
+        for chunk in chunks:
+
+            logger.info(
+                f"Retrieved chunk "
+                f"{chunk['chunk_id']} "
+                f"from {chunk['source_file']} "
+                f"(similarity={chunk['similarity_score']:.4f}) "
+                f"Preview: {chunk['text'][:100]}"
+            )
 
         return chunks
 
