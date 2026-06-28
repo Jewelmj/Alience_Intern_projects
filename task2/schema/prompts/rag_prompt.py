@@ -1,3 +1,15 @@
+"""
+RAG Prompt Design
+
+- System prompt restricts answers to retrieved documents.
+- Context contains retrieved chunks with source labels.
+- Conversation history maintains chat continuity.
+- User query is separated for clarity.
+- Context length is capped to reduce prompt size.
+"""
+
+MAX_CONTEXT_CHARS = 6000
+
 NOT_FOUND_INSTRUCTION = (
     "If the provided context does not contain enough information "
     "to answer the question, respond with exactly: "
@@ -14,11 +26,9 @@ SYSTEM_PROMPT = (
 )
 
 
-def format_context_block(
-    chunks
-):
+def format_context_block(chunks):
 
-    sections = []
+    context = ""
 
     for chunk in chunks:
 
@@ -26,11 +36,17 @@ def format_context_block(
             f"[{chunk['source_file']} | chunk {chunk['chunk_id']}]"
         )
 
-        sections.append(
-            f"{label}\n{chunk['text']}"
+        candidate = (
+            f"{label}\n"
+            f"{chunk['text']}\n\n"
         )
 
-    return "\n\n".join(sections)
+        if len(context) + len(candidate) > MAX_CONTEXT_CHARS:
+            break
+
+        context += candidate
+
+    return context.strip()
 
 
 def build_rag_messages(
@@ -44,13 +60,17 @@ def build_rag_messages(
     )
 
     user_content = (
-        f"Context from uploaded documents:\n\n"
-        f"{context}\n\n"
-        f"Conversation History:\n"
-        f"{history_text}\n\n"
-        f"Question: {query}\n\n"
-        f"{NOT_FOUND_INSTRUCTION}"
-    )
+            f"[CONTEXT]\n"
+            f"{context}\n\n"
+
+            f"[HISTORY]\n"
+            f"{history_text}\n\n"
+
+            f"[QUERY]\n"
+            f"{query}\n\n"
+
+            f"{NOT_FOUND_INSTRUCTION}"
+        )
 
     return [
         {
