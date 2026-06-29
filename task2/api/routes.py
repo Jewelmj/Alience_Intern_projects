@@ -179,3 +179,11 @@ def submit_feedback(request: FeedbackRequest):
     return {
         "status": "success"
     }
+
+@router.get("/analytics/retrieval")
+async def get_retrieval_metrics():
+    records = analytics_repository.get_all()
+
+    return {
+        "records": records
+    }

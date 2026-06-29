@@ -44,7 +44,21 @@ class AnalyticsRepository:
         )
     
     def get_all(self):
-        return list(self.collection.find())
+        records = list(self.collection.find())
+
+        for record in records:
+            record["_id"] = str(record["_id"])
+
+        return records
     
-    def get_by_session(self,session_id):
-        return list(self.collection.find({"session_id":session_id}))
+    def get_by_session(self, session_id):
+        records = list(
+            self.collection.find(
+                {"session_id": session_id}
+            )
+        )
+
+        for record in records:
+            record["_id"] = str(record["_id"])
+
+        return records
