@@ -42,3 +42,9 @@ class AnalyticsRepository:
                 }
             )
         )
+    
+    def get_all(self):
+        return list(self.collection.find())
+    
+    def get_by_session(self,session_id):
+        return list(self.collection.find({"session_id":session_id}))
