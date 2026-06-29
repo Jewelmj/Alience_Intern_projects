@@ -45,7 +45,6 @@ class RetrievalAgent:
         )
 
     def retrieve(self, query, session_id, top_k=None):
-
         if top_k is None:
             top_k = RETRIEVAL_TOP_K
 
@@ -60,7 +59,11 @@ class RetrievalAgent:
             .tolist()
         )
 
+        retrieval_start = time.time()
+
         results = search_similar(query_embedding, session_id, top_k)
+
+        retrieval_latency_ms = int((time.time()- retrieval_start)* 1000)
 
         documents = results.get(
             "documents",
@@ -116,7 +119,13 @@ class RetrievalAgent:
                 f"Preview: {chunk['text'][:100]}"
             )
 
-        return chunks
+        return {
+            "chunks": chunks,
+            "retrieval_latency_ms": retrieval_latency_ms,
+            "top_k_used": top_k,
+            "raw_chunk_count": len(documents),
+            "filtered_chunk_count": len(chunks),
+        }
 
     def chat(self, query, session_id):
         query = query.strip()
@@ -132,10 +141,8 @@ class RetrievalAgent:
             str(uuid.uuid4())
         )
         
-        chunks = self.retrieve(
-            query, 
-            session_id
-        )
+        retrieval_data  = self.retrieve(query, session_id)
+        chunks = retrieval_data["chunks"]
 
         similarity_scores = [
             chunk.get(
@@ -146,6 +153,38 @@ class RetrievalAgent:
         ]
 
         if not chunks:
+            analytics_repository.save(
+            {
+                "interaction_id": interaction_id,
+                "session_id": session_id,
+                "query": query,
+
+                "response_time_ms": int(
+                    (time.time() - start_time) * 1000
+                ),
+
+                "retrieved_sources": 0,
+
+                "similarity_scores": [],
+
+                "retrieval_latency_ms":
+                    retrieval_data["retrieval_latency_ms"],
+
+                "top_k_used":
+                    retrieval_data["top_k_used"],
+
+                "raw_chunk_count":
+                    retrieval_data["raw_chunk_count"],
+
+                "filtered_chunk_count": 0,
+
+                "retrieval_success": False,
+
+                "created_at": datetime.utcnow(),
+
+                "feedback": None
+            }
+            )
 
             return {
                 "status": "not_found",
@@ -208,6 +247,21 @@ class RetrievalAgent:
 
                     "similarity_scores":
                     similarity_scores,
+
+                    "retrieval_latency_ms":
+                    retrieval_data["retrieval_latency_ms"],
+
+                    "top_k_used":
+                    retrieval_data["top_k_used"],
+
+                    "raw_chunk_count":
+                    retrieval_data["raw_chunk_count"],
+
+                    "filtered_chunk_count":
+                    retrieval_data["filtered_chunk_count"],
+
+                    "retrieval_success":
+                    len(chunks) > 0,
 
                     "created_at":
                     datetime.utcnow(),
