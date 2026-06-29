@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from datetime import datetime
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
@@ -247,12 +248,60 @@ def render_dashboard():
             f"{API_BASE_URL}/analytics/retrieval"
         )
 
+        response.raise_for_status()
         data = response.json()
         records = data["records"]
 
         if not records:
             st.info("No retrieval data available.")
             return
+        
+        # Filters
+        filter_col1, filter_col2 = st.columns(2)
+
+        with filter_col1:
+            sessions = sorted(
+                {
+                    record["session_id"]
+                    for record in records
+                }
+            )
+
+            selected_session = st.selectbox(
+                "Session",
+                ["All Sessions"] + sessions
+            )
+
+            if selected_session != "All Sessions":
+                records = [
+                    record
+                    for record in records
+                    if record["session_id"] == selected_session
+                ]
+
+        with filter_col2:
+            dates = sorted(
+                {
+                    datetime.fromisoformat(
+                        record["created_at"]
+                    ).date()
+                    for record in records
+                }
+            )
+
+            selected_date = st.selectbox(
+                "Date",
+                ["All Dates"] + dates
+            )
+
+            if selected_date != "All Dates":
+                records = [
+                    record
+                    for record in records
+                    if datetime.fromisoformat(
+                        record["created_at"]
+                    ).date() == selected_date
+                ]
 
     except requests.exceptions.ConnectionError:
         st.error("Unable to connect to backend.")
@@ -358,6 +407,103 @@ def render_dashboard():
     st.caption(
         f"Detailed retrieval metrics are available for "
         f"{len(latencies)} of {total_queries} interactions."
+    )
+    st.divider()
+
+    st.subheader(
+        "Retrieval Latency Trend"
+    )
+
+    latency_records = [
+        record
+        for record in records
+        if "retrieval_latency_ms" in record
+    ]
+
+    if latency_records:
+
+        latency_chart = [
+            {
+                "Time": record["created_at"],
+                "Latency (ms)": record["retrieval_latency_ms"]
+            }
+            for record in latency_records
+        ]
+
+        st.line_chart(
+            latency_chart,
+            x="Time",
+            y="Latency (ms)"
+        )
+
+    st.subheader(
+        "Similarity Score Distribution"
+    )
+
+    similarity_chart = [
+        {
+            "Score": score
+        }
+        for score in scores
+    ]
+
+    st.bar_chart(
+        similarity_chart
+    )
+
+    st.subheader(
+        "Retrieval Outcomes"
+    )
+
+    success_count = sum(successes)
+
+    failure_count = (
+        len(successes)
+        - success_count
+    )
+
+    st.bar_chart(
+        {
+            "Count": {
+                "Success": success_count,
+                "Failure": failure_count
+            }
+        }
+    )
+
+    st.subheader(
+        "Recent Retrievals"
+    )
+
+    table = []
+
+    for record in records[-10:]:
+
+        table.append(
+            {
+                "Session":
+                    record["session_id"][:8],
+
+                "Latency":
+                    record.get(
+                        "retrieval_latency_ms"
+                    ),
+
+                "Chunks":
+                    record.get(
+                        "filtered_chunk_count"
+                    ),
+
+                "Success":
+                    record.get(
+                        "retrieval_success"
+                    )
+            }
+        )
+
+    st.dataframe(
+        table,
+        use_container_width=True
     )
 
 st.set_page_config(
