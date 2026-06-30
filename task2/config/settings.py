@@ -161,3 +161,37 @@ API_BASE_URL = os.getenv(
     "API_BASE_URL",
     "http://127.0.0.1:8000"
 )
+
+REQUIRED_ENV_VARS = {
+    "MONGO_URI": MONGO_URI,
+    "MONGO_DB_NAME": MONGO_DB_NAME,
+    "API_BASE_URL": API_BASE_URL,
+}
+
+if LLM_PROVIDER == "ollama":
+    REQUIRED_ENV_VARS.update({
+        "OLLAMA_BASE_URL": OLLAMA_BASE_URL,
+        "OLLAMA_MODEL": OLLAMA_MODEL,
+    })
+
+elif LLM_PROVIDER == "openrouter":
+    REQUIRED_ENV_VARS.update({
+        "OPENROUTER_API_KEY": OPENROUTER_API_KEY,
+        "OPENROUTER_MODEL": OPENROUTER_MODEL,
+    })
+else:
+    raise RuntimeError(
+        f"Unsupported LLM provider: {LLM_PROVIDER}"
+    )
+
+missing_variables = [
+    key
+    for key, value in REQUIRED_ENV_VARS.items()
+    if not value
+]
+
+if missing_variables:
+    raise RuntimeError(
+        "Missing required environment variables: "
+        + ", ".join(missing_variables)
+    )
