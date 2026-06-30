@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
 
@@ -41,13 +41,13 @@ def _seed_embeddings(
     )
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    return_value="Mock response"
-)
-def test_retrieval_metrics_saved(
-    mock_generate
-):
+@patch("agents.retrieval.agent.get_provider")
+def test_retrieval_metrics_saved(mock_provider):
+    mock_llm = Mock()
+
+    mock_llm.generate.return_value = "Mock response"
+
+    mock_provider.return_value = mock_llm
 
     _seed_embeddings(
         "ZyxUniqueToken98765 describes a specialized widget processor."
@@ -78,17 +78,17 @@ def test_retrieval_metrics_saved(
     assert "retrieval_success" in record
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    return_value="Mock response"
-)
-def test_similarity_scores_saved(
-    mock_generate
-):
-
+@patch("agents.retrieval.agent.get_provider")
+def test_similarity_scores_saved(mock_provider):
     _seed_embeddings(
         "Unique analytics testing document."
     )
+
+    mock_llm = Mock()
+
+    mock_llm.generate.return_value = "Mock response"
+
+    mock_provider.return_value = mock_llm
 
     response = client.post(
         "/chat",
@@ -117,13 +117,13 @@ def test_similarity_scores_saved(
     )
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    return_value="Mock response"
-)
-def test_successful_retrieval_sets_success_flag(
-    mock_generate
-):
+@patch("agents.retrieval.agent.get_provider")
+def test_successful_retrieval_sets_success_flag(mock_provider):
+    mock_llm = Mock()
+
+    mock_llm.generate.return_value = "Mock response"
+
+    mock_provider.return_value = mock_llm
 
     _seed_embeddings(
         "FastAPI retrieval metrics testing."

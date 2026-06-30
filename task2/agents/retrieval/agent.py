@@ -1,6 +1,6 @@
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 from database.vector_repository import (
     search_similar
@@ -8,10 +8,8 @@ from database.vector_repository import (
 from schema.prompts.rag_prompt import (
     build_rag_messages
 )
-from schema.utils.ollama_client import (
-    generate_chat_response,
-    OllamaError
-)
+from llm.factory import get_provider
+from llm.base import LLMProviderError
 from schema.session.conversation_manager import (
     ConversationManager
 )
@@ -180,7 +178,7 @@ class RetrievalAgent:
 
                 "retrieval_success": False,
 
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(UTC),
 
                 "feedback": None
             }
@@ -207,7 +205,8 @@ class RetrievalAgent:
         )
 
         try:
-            answer = generate_chat_response(messages)
+            provider = get_provider()
+            answer = provider.generate(messages)
             response_time_ms = int(
                 (
                     time.time()
@@ -264,14 +263,14 @@ class RetrievalAgent:
                     len(chunks) > 0,
 
                     "created_at":
-                    datetime.utcnow(),
+                    datetime.now(UTC),
 
                     "feedback":
                     None
                 }
             )
 
-        except OllamaError as exc:
+        except LLMProviderError as exc:
 
             raise ValueError(
                 str(exc)
