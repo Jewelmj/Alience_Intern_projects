@@ -134,3 +134,23 @@ FILE_RETENTION_DAYS = int(
         30
     )
 )
+
+REQUIRED_ENV_VARS = {
+    "MONGO_URI": MONGO_URI,
+    "MONGO_DB_NAME": MONGO_DB_NAME,
+    "OLLAMA_BASE_URL": OLLAMA_BASE_URL,
+    "OLLAMA_MODEL": OLLAMA_MODEL,
+    "API_BASE_URL": API_BASE_URL,
+}
+
+missing_variables = [
+    key
+    for key, value in REQUIRED_ENV_VARS.items()
+    if not value
+]
+
+if missing_variables:
+    raise RuntimeError(
+        "Missing required environment variables: "
+        + ", ".join(missing_variables)
+    )
