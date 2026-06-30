@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
 
@@ -9,12 +9,9 @@ from agents.embedding.agent import (
 from database.vector_repository import (
     save_embeddings
 )
-from schema.utils.ollama_client import (
-    OllamaError
-)
+from llm.base import LLMProviderError
 
 client = TestClient(app)
-
 
 def _seed_embeddings(
     text,
@@ -65,7 +62,6 @@ def test_chat_empty_query():
 
 
 def test_chat_not_found_without_relevant_documents():
-
     response = client.post(
         "/chat",
         json={
@@ -83,13 +79,15 @@ def test_chat_not_found_without_relevant_documents():
     assert "could not find" in data["answer"].lower()
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    return_value="FastAPI is a Python web framework."
-)
-def test_chat_with_relevant_context(
-    mock_generate
-):
+@patch("agents.retrieval.agent.get_provider")
+def test_chat_with_relevant_context(mock_provider):
+    mock_llm = Mock()
+
+    mock_llm.generate.return_value = (
+        "FastAPI is a Python web framework."
+    )
+
+    mock_provider.return_value = mock_llm
 
     _seed_embeddings(
         "ZyxUniqueToken98765 describes a specialized widget processor.",
@@ -114,18 +112,20 @@ def test_chat_with_relevant_context(
     assert data["sources"][0]["source_file"] == "unique_widget_doc.pdf"
     assert data["sources"][0]["similarity_score"] > 0
 
-    mock_generate.assert_called_once()
+    mock_provider.assert_called_once()
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    side_effect=OllamaError(
-        "Failed to reach the language model."
+@patch("agents.retrieval.agent.get_provider",)
+def test_chat_ollama_failure_returns_error(mock_provider):
+    mock_llm = Mock()
+
+    mock_llm.generate.side_effect = (
+        LLMProviderError(
+            "Failed to reach the language model."
+        )
     )
-)
-def test_chat_ollama_failure_returns_error(
-    mock_generate
-):
+
+    mock_provider.return_value = mock_llm
 
     _seed_embeddings(
         "Some indexed document text about databases."
@@ -145,16 +145,20 @@ def test_chat_ollama_failure_returns_error(
 
     assert data["status"] == "error"
 
-    mock_generate.assert_called_once()
+    mock_provider.assert_called_once()
 
 
-@patch(
-    "agents.retrieval.agent.generate_chat_response",
-    return_value="FastAPI is a Python web framework."
-)
-def test_session_isolation(
-    mock_generate
-):
+@patch("agents.retrieval.agent.get_provider",)
+def test_session_isolation(mock_provider):
+    mock_llm = Mock()
+
+    mock_llm.generate.side_effect = (
+        LLMProviderError(
+            "Failed to reach the language model."
+        )
+    )
+
+    mock_provider.return_value = mock_llm
 
     _seed_embeddings(
         "FastAPI is a modern Python web framework.",
@@ -177,4 +181,4 @@ def test_session_isolation(
     assert data["status"] == "not_found"
     assert data["sources"] == []
 
-    mock_generate.assert_not_called()
+    mock_provider.assert_not_called()

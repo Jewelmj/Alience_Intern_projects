@@ -1,6 +1,6 @@
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 from database.vector_repository import (
     search_similar
@@ -178,7 +178,7 @@ class RetrievalAgent:
 
                 "retrieval_success": False,
 
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(UTC),
 
                 "feedback": None
             }
@@ -263,7 +263,7 @@ class RetrievalAgent:
                     len(chunks) > 0,
 
                     "created_at":
-                    datetime.utcnow(),
+                    datetime.now(UTC),
 
                     "feedback":
                     None

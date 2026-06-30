@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Upload
 ALLOWED_EXTENSIONS = set(
     os.getenv(
         "ALLOWED_EXTENSIONS",
@@ -25,11 +26,35 @@ MAX_PDF_PAGES = int(
     )
 )
 
+# Storage
 UPLOAD_FOLDER = os.getenv(
     "UPLOAD_FOLDER",
     "storage/uploads"
 )
 
+EXTRACTED_TEXT_FOLDER = os.getenv(
+    "EXTRACTED_TEXT_FOLDER",
+    "storage/extracted_text"
+)
+
+CHROMA_DB_PATH = os.getenv(
+    "CHROMA_DB_PATH",
+    "storage/chromadb"
+)
+
+CHROMA_COLLECTION = os.getenv(
+    "CHROMA_COLLECTION",
+    "documents"
+)
+
+FILE_RETENTION_DAYS = int(
+    os.getenv(
+        "FILE_RETENTION_DAYS",
+        30
+    )
+)
+
+# Logging
 LOG_FOLDER = os.getenv(
     "LOG_FOLDER",
     "logs"
@@ -45,11 +70,7 @@ LOG_LEVEL = os.getenv(
     "INFO"
 )
 
-EXTRACTED_TEXT_FOLDER = os.getenv(
-    "EXTRACTED_TEXT_FOLDER",
-    "storage/extracted_text"
-)
-
+# Chunking
 CHUNK_SIZE = int(
     os.getenv(
         "CHUNK_SIZE",
@@ -63,12 +84,13 @@ CHUNK_OVERLAP = int(
         100
     )
 )
-
+# Embeddings
 EMBEDDING_MODEL = os.getenv(
     "EMBEDDING_MODEL",
     "all-MiniLM-L6-v2"
 )
 
+# Database
 MONGO_URI = os.getenv(
     "MONGO_URI"
 )
@@ -77,16 +99,7 @@ MONGO_DB_NAME = os.getenv(
     "MONGO_DB_NAME"
 )
 
-CHROMA_DB_PATH = os.getenv(
-    "CHROMA_DB_PATH",
-    "storage/chromadb"
-)
-
-CHROMA_COLLECTION = os.getenv(
-    "CHROMA_COLLECTION",
-    "documents"
-)
-
+# Retrieval
 RETRIEVAL_TOP_K = int(
     os.getenv(
         "RETRIEVAL_TOP_K",
@@ -101,6 +114,12 @@ RELEVANCE_MAX_DISTANCE = float(
     )
 )
 
+NOT_FOUND_MESSAGE = os.getenv(
+    "NOT_FOUND_MESSAGE",
+    "I could not find information about that in the uploaded documents."
+)
+
+# LLM
 LLM_PROVIDER = os.getenv(
     "LLM_PROVIDER",
     "ollama"
@@ -129,7 +148,7 @@ OPENROUTER_API_KEY = os.getenv(
 
 OPENROUTER_MODEL = os.getenv(
     "OPENROUTER_MODEL",
-    "openai/gpt-4.1-mini"
+    "openai/gpt-oss-120b:free"
 )
 
 OPENROUTER_BASE_URL = os.getenv(
@@ -137,19 +156,8 @@ OPENROUTER_BASE_URL = os.getenv(
     "https://openrouter.ai/api/v1"
 )
 
-NOT_FOUND_MESSAGE = os.getenv(
-    "NOT_FOUND_MESSAGE",
-    "I could not find information about that in the uploaded documents."
-)
-
+# UI
 API_BASE_URL = os.getenv(
     "API_BASE_URL",
     "http://127.0.0.1:8000"
-)
-
-FILE_RETENTION_DAYS = int(
-    os.getenv(
-        "FILE_RETENTION_DAYS",
-        30
-    )
 )
