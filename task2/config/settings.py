@@ -101,6 +101,11 @@ RELEVANCE_MAX_DISTANCE = float(
     )
 )
 
+LLM_PROVIDER = os.getenv(
+    "LLM_PROVIDER",
+    "ollama"
+)
+
 OLLAMA_BASE_URL = os.getenv(
     "OLLAMA_BASE_URL",
     "http://localhost:11434"
@@ -116,6 +121,20 @@ OLLAMA_TIMEOUT = int(
         "OLLAMA_TIMEOUT",
         120
     )
+)
+
+OPENROUTER_API_KEY = os.getenv(
+    "OPENROUTER_API_KEY"
+)
+
+OPENROUTER_MODEL = os.getenv(
+    "OPENROUTER_MODEL",
+    "openai/gpt-4.1-mini"
+)
+
+OPENROUTER_BASE_URL = os.getenv(
+    "OPENROUTER_BASE_URL",
+    "https://openrouter.ai/api/v1"
 )
 
 NOT_FOUND_MESSAGE = os.getenv(

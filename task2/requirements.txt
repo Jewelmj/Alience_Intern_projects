@@ -13,6 +13,9 @@ easyocr
 langchain-text-splitters
 sentence-transformers
 
+# LLM
+openai
+
 # DB
 pymongo
 chromadb
