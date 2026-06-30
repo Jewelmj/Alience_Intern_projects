@@ -46,6 +46,18 @@ cp .env.example .env
 
 Update values as needed before starting the application.
 
+### Environment Validation
+
+The application validates required environment variables during startup and exits with a clear error message if any required configuration is missing.
+
+Required environment variables:
+
+- `MONGO_URI`
+- `MONGO_DB_NAME`
+- `OLLAMA_BASE_URL`
+- `OLLAMA_MODEL`
+- `API_BASE_URL`
+
 ## Docker Deployment
 
 ### Prerequisites
@@ -87,6 +99,23 @@ The following directories are mounted as Docker volumes:
 
 Uploaded documents, extracted text, embeddings, and logs remain available after container restarts.
 
+### Health Check
+
+The backend container includes an automatic health check.
+
+Verify the container status:
+
+```bash
+docker ps
+```
+
+A healthy backend should display:
+
+```text
+STATUS
+Up (healthy)
+```
+
 ## Optional GPU Acceleration
 
 Install a CUDA-enabled PyTorch build:
@@ -94,6 +123,21 @@ Install a CUDA-enabled PyTorch build:
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu132
 ```
+
+## Production Readiness
+
+The application has been validated for public beta deployment.
+
+### Verified Features
+
+- ✅ Docker deployment
+- ✅ Environment validation
+- ✅ Persistent storage
+- ✅ Health monitoring
+- ✅ Analytics collection
+- ✅ User feedback collection
+- ✅ Retrieval analytics dashboard
+- ✅ Automated test suite
 
 ## Project Architecture
 
@@ -169,7 +213,7 @@ streamlit run ui/app.py
 
 5. Ask questions about the uploaded documents
 
-## Example API Test
+## API Examples
 
 Upload documents:
 
@@ -241,6 +285,36 @@ Example response:
 - [x] Agent 2 - Embedding Agent
 - [x] Agent 3 - Retrieval Agent
 - [x] FastAPI Backend
+- [x] Streamlit Frontend
 - [x] ChromaDB Integration
+- [x] MongoDB Analytics
 - [x] Session-Aware Retrieval
-- [x] Streamlit UI
+- [x] Docker Deployment
+- [x] Persistent Storage
+- [x] Health Monitoring
+- [x] Retrieval Analytics Dashboard
+- [x] User Feedback System
+- [x] Automated Test Suite
+- [x] Public Beta Ready
+
+## Smoke Test Checklist
+
+The following workflow has been verified before release:
+
+| Component | Status |
+|-----------|--------|
+| Backend startup | ✅ |
+| Frontend startup | ✅ |
+| MongoDB connectivity | ✅ |
+| Ollama connectivity | ✅ |
+| PDF upload | ✅ |
+| Image upload | ✅ |
+| Text extraction | ✅ |
+| Embedding generation | ✅ |
+| ChromaDB persistence | ✅ |
+| Chat retrieval | ✅ |
+| User feedback | ✅ |
+| Retrieval analytics | ✅ |
+| Health endpoint | ✅ |
+| Docker volume persistence | ✅ |
+| Unit tests | ✅ |
