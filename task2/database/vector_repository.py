@@ -25,21 +25,13 @@ def save_embeddings(
             record["text"]
         )
 
-        metadatas.append(
-            {
-                "source_file":
-                    record["source_file"],
+        metadata = record.copy()
 
-                "session_id":
-                    record["session_id"],
+        metadata.pop("embedding", None)
+        metadata.pop("text", None)
+        metadata.pop("vector_dimension", None)
 
-                "chunk_id":
-                    record["chunk_id"],
-
-                "chunk_length":
-                    record["chunk_length"]
-            }
-        )
+        metadatas.append(metadata)
 
     collection.add(
         ids=ids,

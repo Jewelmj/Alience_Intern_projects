@@ -99,6 +99,15 @@ MONGO_DB_NAME = os.getenv(
     "MONGO_DB_NAME"
 )
 
+ENABLE_EPHEMERAL_STORAGE = (
+    os.getenv(
+        "ENABLE_EPHEMERAL_STORAGE",
+        "False"
+    ).lower() == "true"
+)
+
+SESSION_TIMEOUT_MINUTES = int(os.getenv("SESSION_TIMEOUT_MINUTES",30))
+
 # Retrieval
 RETRIEVAL_TOP_K = int(
     os.getenv(

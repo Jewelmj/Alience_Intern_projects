@@ -2,6 +2,7 @@ import time
 import uuid
 from datetime import datetime, UTC
 
+from database.document_repository import update_last_access
 from database.vector_repository import (
     search_similar
 )
@@ -92,6 +93,10 @@ class RetrievalAgent:
 
             if distance > RELEVANCE_MAX_DISTANCE:
                 continue
+
+            update_last_access(
+                metadata["document_id"]
+            )
 
             chunks.append(
                 {
