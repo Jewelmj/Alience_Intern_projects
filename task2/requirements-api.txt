@@ -1,0 +1,24 @@
+# API
+fastapi
+uvicorn
+httpx
+
+# Core
+python-multipart
+python-dotenv
+
+# AI / NLP
+pypdf
+easyocr
+langchain-text-splitters
+sentence-transformers
+
+# LLM
+openai
+
+# DB
+pymongo
+chromadb
+
+# Development
+pytest
