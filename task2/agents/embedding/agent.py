@@ -45,17 +45,12 @@ class EmbeddingAgent:
             vectors
         ):
 
-            embedding_records.append(
-            {
-                "chunk_id": chunk["chunk_id"],
-                "session_id": chunk["session_id"],
-                "source_file": chunk["source_file"],
-                "chunk_length": chunk["chunk_length"],
-                "text": chunk["text"],
-                "vector_dimension": len(vector),
-                "embedding": vector.tolist()
-            }
-        )
+            record = chunk.copy()
+
+            record["vector_dimension"] = len(vector)
+            record["embedding"] = vector.tolist()
+
+            embedding_records.append(record)
 
         logger.info(
             f"Generated {len(embedding_records)} embeddings"

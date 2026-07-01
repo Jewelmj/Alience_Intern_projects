@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from bson import ObjectId
 
 from database.connection import db
@@ -57,5 +59,28 @@ def delete_document(
     return documents.delete_one(
         {
             "_id": ObjectId(document_id)
+        }
+    )
+
+def get_expired_sessions(cutoff_time):
+    return list(
+        documents.find(
+            {
+                "last_accessed": {
+                    "$lt": cutoff_time
+                }
+            }
+        )
+    )
+
+def update_last_access(document_id):
+    return documents.update_one(
+        {
+            "_id": ObjectId(document_id)
+        },
+        {
+            "$set": {
+                "last_accessed": datetime.now(UTC)
+            }
         }
     )

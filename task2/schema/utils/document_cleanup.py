@@ -1,8 +1,9 @@
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from config.settings import (
-    FILE_RETENTION_DAYS
+    FILE_RETENTION_DAYS,
+    UPLOAD_FOLDER
 )
 
 from database.document_repository import (
@@ -16,10 +17,64 @@ from database.vector_repository import (
 
 from config.logger import logger
 
+def delete_document_resources(document):
+    filename = document["filename"]
+
+    delete_document_embeddings(
+        filename
+    )
+
+    files_to_delete = [
+
+        Path(UPLOAD_FOLDER)
+        / filename,
+
+        Path(
+            "storage/extracted_text"
+        )
+        / document.get(
+            "text_file",
+            ""
+        ),
+
+        Path(
+            "storage/chunks"
+        )
+        / document.get(
+            "chunk_metadata_file",
+            ""
+        ),
+
+        Path(
+            "storage/vectors"
+        )
+        / document.get(
+            "vector_file",
+            ""
+        )
+    ]
+
+    for file_path in files_to_delete:
+
+        if file_path.name == ".gitkeep":
+            continue
+
+        if file_path.exists():
+
+            file_path.unlink()
+
+            logger.info(
+                f"Deleted {file_path}"
+            )
+
+    delete_document(
+        str(document["_id"])
+    )
+
 def cleanup_old_documents():
 
     cutoff_date = (
-        datetime.utcnow()
+        datetime.now(UTC)
         - timedelta(
             days=FILE_RETENTION_DAYS
         )
@@ -34,59 +89,7 @@ def cleanup_old_documents():
     deleted_count = 0
 
     for document in old_documents:
-
-        filename = document["filename"]
-
-        delete_document_embeddings(
-            filename
-        )
-
-        files_to_delete = [
-
-            Path("storage/uploads")
-            / filename,
-
-            Path(
-                "storage/extracted_text"
-            )
-            / document.get(
-                "text_file",
-                ""
-            ),
-
-            Path(
-                "storage/chunks"
-            )
-            / document.get(
-                "chunk_metadata_file",
-                ""
-            ),
-
-            Path(
-                "storage/vectors"
-            )
-            / document.get(
-                "vector_file",
-                ""
-            )
-        ]
-
-        for file_path in files_to_delete:
-
-            if file_path.name == ".gitkeep":
-                continue
-
-            if file_path.exists():
-
-                file_path.unlink()
-
-                logger.info(
-                    f"Deleted {file_path}"
-                )
-
-        delete_document(
-            str(document["_id"])
-        )
+        delete_document_resources(document)
 
         deleted_count += 1
 
