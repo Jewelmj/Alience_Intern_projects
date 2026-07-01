@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from config.settings import (
     FILE_RETENTION_DAYS,

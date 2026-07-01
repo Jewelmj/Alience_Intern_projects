@@ -2,9 +2,7 @@ from database.vector_store import (
     collection
 )
 
-def save_embeddings(
-    embedding_records
-):
+def save_embeddings(embedding_records):
 
     ids = []
     embeddings = []

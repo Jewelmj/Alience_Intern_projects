@@ -1,4 +1,12 @@
 from unittest.mock import Mock, patch
+from bson import ObjectId
+from uuid import uuid4
+
+from datetime import UTC, datetime
+from database.document_repository import (
+    create_document,
+    get_document
+)
 
 from fastapi.testclient import TestClient
 
@@ -14,14 +22,17 @@ client = TestClient(app)
 def _seed_embeddings(
     text,
     source_file="test_chat.pdf",
-    session_id="test-session",
+    session_id=None,
     chunk_id=0
 ):
+    if session_id is None:
+        session_id = str(uuid4())
 
     embedding_agent = EmbeddingAgent()
 
     chunks = [
         {
+            "document_id": str(ObjectId()),
             "chunk_id": chunk_id,
             "session_id": session_id,
             "source_file": source_file,
@@ -40,6 +51,8 @@ def _seed_embeddings(
         embeddings
     )
 
+    return session_id
+
 
 @patch("agents.retrieval.agent.get_provider")
 def test_retrieval_metrics_saved(mock_provider):
@@ -49,7 +62,7 @@ def test_retrieval_metrics_saved(mock_provider):
 
     mock_provider.return_value = mock_llm
 
-    _seed_embeddings(
+    session_id = _seed_embeddings(
         "ZyxUniqueToken98765 describes a specialized widget processor."
     )
 
@@ -57,7 +70,7 @@ def test_retrieval_metrics_saved(mock_provider):
         "/chat",
         json={
             "query": "What is ZyxUniqueToken98765?",
-            "session_id": "test-session"
+            "session_id": session_id
         }
     )
 
@@ -80,7 +93,7 @@ def test_retrieval_metrics_saved(mock_provider):
 
 @patch("agents.retrieval.agent.get_provider")
 def test_similarity_scores_saved(mock_provider):
-    _seed_embeddings(
+    session_id = _seed_embeddings(
         "Unique analytics testing document."
     )
 
@@ -94,7 +107,7 @@ def test_similarity_scores_saved(mock_provider):
         "/chat",
         json={
             "query": "analytics",
-            "session_id": "test-session"
+            "session_id": session_id
         }
     )
 
@@ -125,7 +138,7 @@ def test_successful_retrieval_sets_success_flag(mock_provider):
 
     mock_provider.return_value = mock_llm
 
-    _seed_embeddings(
+    session_id = _seed_embeddings(
         "FastAPI retrieval metrics testing."
     )
 
@@ -133,7 +146,7 @@ def test_successful_retrieval_sets_success_flag(mock_provider):
         "/chat",
         json={
             "query": "FastAPI",
-            "session_id": "test-session"
+            "session_id": session_id
         }
     )
 
@@ -150,7 +163,6 @@ def test_successful_retrieval_sets_success_flag(mock_provider):
 
 
 def test_failed_retrieval_sets_failure_flag():
-
     response = client.post(
         "/chat",
         json={
@@ -170,4 +182,76 @@ def test_failed_retrieval_sets_failure_flag():
     assert (
         record["filtered_chunk_count"]
         == 0
+    )
+
+@patch("agents.retrieval.agent.get_provider")
+def test_last_access_updated_after_retrieval(mock_provider):
+
+    mock_llm = Mock()
+
+    mock_llm.generate.return_value = "Mock response"
+
+    mock_provider.return_value = mock_llm
+
+    document = {
+        "filename": "last_access_test.pdf",
+        "uploaded_at": datetime.now(UTC),
+        "last_accessed": datetime.now(UTC),
+        "chunk_count": 1,
+    }
+
+    document_id = create_document(
+        document
+    )
+
+    original_document = get_document(
+        document_id
+    )
+
+    original_last_accessed = (
+        original_document["last_accessed"]
+    )
+
+    session_id = str(uuid4())
+
+    embedding_agent = EmbeddingAgent()
+
+    chunks = [
+        {
+            "document_id": document_id,
+            "chunk_id": 0,
+            "session_id": session_id,
+            "source_file": "last_access_test.pdf",
+            "chunk_length": 32,
+            "text": "FastAPI retrieval testing."
+        }
+    ]
+
+    embeddings = (
+        embedding_agent.generate_embeddings(
+            chunks
+        )
+    )
+
+    save_embeddings(
+        embeddings
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "query": "FastAPI",
+            "session_id": session_id
+        }
+    )
+
+    assert response.status_code == 200
+
+    updated_document = get_document(
+        document_id
+    )
+
+    assert (
+        updated_document["last_accessed"]
+        > original_last_accessed
     )

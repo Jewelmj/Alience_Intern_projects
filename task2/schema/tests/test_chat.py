@@ -1,6 +1,8 @@
 from unittest.mock import Mock, patch
+from uuid import uuid4
 
 from fastapi.testclient import TestClient
+from bson import ObjectId
 
 from main import app
 from agents.embedding.agent import (
@@ -16,14 +18,17 @@ client = TestClient(app)
 def _seed_embeddings(
     text,
     source_file="test_chat.pdf",
-    session_id="test-session",
+    session_id=None,
     chunk_id=0
 ):
+    if session_id is None:
+        session_id = str(uuid4())
 
     embedding_agent = EmbeddingAgent()
 
     chunks = [
         {
+            "document_id": str(ObjectId()),
             "chunk_id": chunk_id,
             "session_id": session_id,
             "source_file": source_file,
@@ -41,10 +46,10 @@ def _seed_embeddings(
     save_embeddings(
         embeddings
     )
+    return session_id
 
 
 def test_chat_empty_query():
-
     response = client.post(
         "/chat",
         json={
@@ -89,7 +94,7 @@ def test_chat_with_relevant_context(mock_provider):
 
     mock_provider.return_value = mock_llm
 
-    _seed_embeddings(
+    session_id = _seed_embeddings(
         "ZyxUniqueToken98765 describes a specialized widget processor.",
         source_file="unique_widget_doc.pdf"
     )
@@ -98,7 +103,7 @@ def test_chat_with_relevant_context(mock_provider):
         "/chat",
         json={
             "query": "What is ZyxUniqueToken98765?",
-            "session_id": "test-session"
+            "session_id": session_id
         }
     )
 
@@ -127,15 +132,13 @@ def test_chat_ollama_failure_returns_error(mock_provider):
 
     mock_provider.return_value = mock_llm
 
-    _seed_embeddings(
-        "Some indexed document text about databases."
-    )
+    session_id = _seed_embeddings("Some indexed document text about databases.")
 
     response = client.post(
         "/chat",
         json={
             "query": "Tell me about databases",
-            "session_id": "test-session"
+            "session_id": session_id
         }
     )
 
